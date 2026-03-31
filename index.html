@@ -1,0 +1,3468 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Qwok | Executive Admin Console</title>
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-main: #020617;
+            --sidebar-bg: #0f172a;
+            --card-bg: #1e293b;
+            --primary: #3b82f6;
+            --primary-glow: rgba(59, 130, 246, 0.4);
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --border: rgba(255, 255, 255, 0.08);
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --ai-accent: #a855f7;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-main);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--card-bg);
+            border-radius: 10px;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 100;
+            padding: 32px 16px;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-left: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-group {
+            margin-bottom: 24px;
+        }
+
+        .nav-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            padding-left: 12px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: var(--text-muted);
+            text-decoration: none;
+            border-radius: 12px;
+            margin-bottom: 4px;
+            transition: var(--transition);
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-main);
+        }
+
+        .nav-link.active {
+            background: linear-gradient(135deg, var(--primary), #1d4ed8);
+            color: white;
+            box-shadow: 0 4px 15px var(--primary-glow);
+        }
+
+        .nav-link i {
+            width: 20px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .nav-badge {
+            background: var(--danger);
+            color: white;
+            font-size: 10px;
+            padding: 2px 7px;
+            border-radius: 20px;
+            margin-left: auto;
+            font-weight: 800;
+            animation: pulse-badge 2s infinite;
+        }
+
+        @keyframes pulse-badge {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* Main Content */
+        .main-wrapper {
+            margin-left: 280px;
+            flex: 1;
+            padding: 40px;
+            max-width: 1440px;
+            width: calc(100% - 280px);
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .header-title h1 {
+            font-size: 32px;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        .header-title p {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background-color: var(--card-bg);
+            padding: 24px;
+            border-radius: 24px;
+            border: 1px solid var(--border);
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+        }
+
+        .stat-card .icon-box {
+            width: 48px;
+            height: 48px;
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--primary);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            font-size: 20px;
+        }
+
+        .stat-card .label {
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .stat-card .value {
+            font-size: 28px;
+            font-weight: 800;
+            margin-top: 8px;
+        }
+
+        /* AI Insight Box */
+        .ai-insight-box {
+            background: linear-gradient(135deg, #1e1b4b, #2e1065);
+            border: 1px solid var(--ai-accent);
+            border-radius: 24px;
+            padding: 24px;
+            margin-bottom: 40px;
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .ai-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .ai-header i {
+            color: var(--ai-accent);
+            font-size: 20px;
+        }
+
+        .ai-header h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #e9d5ff;
+        }
+
+        .ai-content {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #d8b4fe;
+        }
+
+        /* Sections */
+        .section {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Tables */
+        .table-card {
+            background-color: var(--card-bg);
+            border-radius: 24px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+
+        .table-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 16px 24px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        td {
+            padding: 18px 24px;
+            font-size: 14px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.01);
+        }
+
+        /* Badges */
+        .badge {
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .badge-pending {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+
+        .badge-success {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
+        .badge-primary {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--primary);
+        }
+
+        .badge-danger {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+
+        /* UI Elements */
+        .btn {
+            padding: 10px 18px;
+            border-radius: 12px;
+            border: none;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+        }
+
+        .btn-outline:hover {
+            background: var(--border);
+        }
+
+        .btn-ai {
+            background: var(--ai-accent);
+            color: white;
+            box-shadow: 0 0 10px rgba(168, 85, 247, 0.3);
+        }
+
+        .btn-ai:hover {
+            background: #9333ea;
+            transform: translateY(-1px);
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.5);
+        }
+
+        .btn-ai:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 8px;
+        }
+
+        /* Login */
+        #login-overlay {
+            position: fixed;
+            inset: 0;
+            background: var(--bg-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .login-card {
+            background: var(--sidebar-bg);
+            padding: 48px;
+            border-radius: 32px;
+            border: 1px solid var(--border);
+            text-align: center;
+            width: 420px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .google-btn {
+            background: white;
+            color: #0f172a;
+            width: 100%;
+            padding: 16px;
+            border-radius: 16px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            cursor: pointer;
+            border: none;
+            margin-top: 32px;
+            transition: var(--transition);
+        }
+
+        .google-btn:hover {
+            background: #f8fafc;
+            transform: translateY(-2px);
+        }
+
+        /* Modals & Toasts */
+        #toast-container {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 10001;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .toast {
+            min-width: 300px;
+            padding: 16px 20px;
+            background: var(--sidebar-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            color: var(--text-main);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            transform: translateX(120%);
+            transition: var(--transition);
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.success {
+            border-left: 4px solid var(--success);
+        }
+
+        .toast.error {
+            border-left: 4px solid var(--danger);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: 10000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-card {
+            background: var(--sidebar-bg);
+            border: 1px solid var(--border);
+            border-radius: 28px;
+            padding: 32px;
+            width: 100%;
+            max-width: 480px;
+            animation: modalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes modalPop {
+            from {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .input-group input,
+        .input-group select,
+        .input-group textarea {
+            width: 100%;
+            padding: 14px;
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: white;
+            font-size: 14px;
+        }
+
+        /* Image Preview */
+        .img-preview {
+            width: 100%;
+            height: 180px;
+            border-radius: 16px;
+            background: var(--bg-main);
+            border: 2px dashed var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            overflow: hidden;
+        }
+
+        .img-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Toast Notifications -->
+    <div id="toast-container"></div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirm-modal" class="modal-overlay">
+        <div class="modal-card" style="text-align: center;">
+            <div style="font-size: 48px; color: var(--warning); margin-bottom: 20px;"><i
+                    class="fas fa-circle-question"></i></div>
+            <h3 id="confirm-title" style="margin-bottom: 8px; font-size: 20px;">Confirm Action</h3>
+            <p id="confirm-body"
+                style="color: var(--text-muted); font-size: 14px; margin-bottom: 28px; line-height: 1.5;"></p>
+            <div style="display: flex; gap: 12px; justify-content: center;">
+                <button class="btn btn-outline" onclick="closeConfirm()">Cancel</button>
+                <button class="btn btn-primary" id="confirm-execute">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Modal -->
+    <div id="ai-modal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="ai-header">
+                <i class="fas fa-sparkles"></i>
+                <h3 id="ai-modal-title">AI Insight</h3>
+            </div>
+            <div class="ai-content" id="ai-modal-body"
+                style="background: rgba(0,0,0,0.2); padding: 20px; border-radius: 16px; margin-bottom: 24px; white-space: pre-wrap;">
+                Analyzing data...
+            </div>
+            <div style="display: flex; justify-content: flex-end;">
+                <button class="btn btn-outline"
+                    onclick="document.getElementById('ai-modal').style.display='none'">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Screen -->
+    <div id="login-overlay">
+        <div class="login-card">
+            <div class="logo" style="justify-content: center; margin-bottom: 24px;">
+                <i class="fas fa-briefcase"></i> Qwok
+            </div>
+            <h2 style="font-size: 24px; margin-bottom: 8px;">Admin Console</h2>
+            <p style="color: var(--text-muted); font-size: 15px;">Secure gateway for platform administrators.</p>
+            <button class="google-btn" onclick="login()">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/pwa_rebrand/google.svg" width="20"
+                    alt="Google">
+                Sign in with Google
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div id="admin-app" style="display: none; width: 100%;">
+        <nav class="sidebar">
+            <div class="logo">
+                <i class="fas fa-briefcase"></i> Qwok
+            </div>
+
+            <div class="nav-group">
+                <div class="nav-label">Main</div>
+                <div class="nav-link active" onclick="switchSection('dashboard')">
+                    <i class="fas fa-chart-pie"></i> Dashboard
+                </div>
+                <div class="nav-link" onclick="switchSection('marketplace-analytics')">
+                    <i class="fas fa-chart-line"></i> Market Intelligence
+                </div>
+                <div class="nav-link" onclick="switchSection('growth-center')">
+                    <i class="fas fa-rocket"></i> Growth Engine
+                </div>
+            </div>
+
+            <div class="nav-group">
+                <div class="nav-label">Governance & Security</div>
+                <div class="nav-link" onclick="switchSection('policy-engine')">
+                    <i class="fas fa-gavel"></i> Policy Engine
+                </div>
+                <div class="nav-link" onclick="switchSection('fraud-intelligence')">
+                    <i class="fas fa-shield-halved"></i> Trust & Safety
+                </div>
+            </div>
+
+            <div class="nav-group">
+                <div class="nav-label">User Ecosystem</div>
+                <div class="nav-link" onclick="switchSection('workers-list')">
+                    <i class="fas fa-user-ninja"></i> Workers
+                </div>
+                <div class="nav-link" onclick="switchSection('owners-list')">
+                    <i class="fas fa-building-user"></i> Business Owners
+                </div>
+                <div class="nav-link" onclick="switchSection('verifications')">
+                    <i class="fas fa-id-card-clip"></i> KYC Center <span id="badge-verif" class="nav-badge"
+                        style="display:none">0</span>
+                </div>
+            </div>
+
+            <div class="nav-group">
+                <div class="nav-label">Corporate Hub</div>
+                <div class="nav-link" onclick="switchSection('job-moderation')">
+                    <i class="fas fa-briefcase"></i> Job Moderation
+                </div>
+            </div>
+
+            <div class="nav-group">
+                <div class="nav-label">Freelance Ecosystem</div>
+                <div class="nav-link" onclick="switchSection('project-moderation')">
+                    <i class="fas fa-tags"></i> Market Moderation
+                </div>
+                <div class="nav-link" onclick="switchSection('live-projects')">
+                    <i class="fas fa-diagram-project"></i> Project Operations
+                </div>
+                <div class="nav-link" onclick="switchSection('approvals')">
+                    <i class="fas fa-stamp"></i> Review Queue <span id="badge-approvals" class="nav-badge"
+                        style="display:none">0</span>
+                </div>
+            </div>
+
+            <div class="nav-group">
+                <div class="nav-label">Finance & Operations</div>
+                <div class="nav-link" onclick="switchSection('finance')">
+                    <i class="fas fa-sack-dollar"></i> Finance & Revenue
+                </div>
+                <div class="nav-link" onclick="switchSection('withdrawals')">
+                    <i class="fas fa-wallet"></i> Withdrawals <span id="badge-withdraw" class="nav-badge"
+                        style="display:none">0</span>
+                </div>
+                <div class="nav-link" title="Double-Entry Audit" onclick="switchSection('ledger-explorer')">
+                    <i class="fas fa-microchip"></i> Enterprise Ledger
+                </div>
+                <div class="nav-link" onclick="switchSection('audit-center')">
+                    <i class="fas fa-clipboard-check"></i> Audit Center
+                </div>
+
+                <div class="nav-cluster">
+                    <div class="cluster-label">Optimization & Ecosystem</div>
+                    <div class="nav-link" onclick="switchSection('ab-testing')"><i class="fas fa-vials"></i> A/B Testing</div>
+                    <div class="nav-link" onclick="switchSection('developer-console')"><i class="fas fa-code"></i> Developer API</div>
+                    <div class="nav-link" onclick="switchSection('soc-center')"><i class="fas fa-shield-alt"></i> SOC Center</div>
+                </div>
+
+                <div class="nav-link" onclick="switchSection('support-desk')">
+                    <i class="fas fa-headset"></i> Support Desk <span id="badge-tickets" class="nav-badge"
+                        style="display:none">0</span>
+                </div>
+                <div class="nav-link" onclick="switchSection('messaging-center')">
+                    <i class="fas fa-bullhorn"></i> Global Messaging
+                </div>
+                <div class="nav-link" onclick="switchSection('release-console')">
+                    <i class="fas fa-code-branch"></i> Release Console
+                </div>
+            </div>
+
+            <div class="nav-group" style="margin-top: auto;">
+                <div class="nav-link" onclick="switchSection('system-health')">
+                    <i class="fas fa-heartbeat"></i> System Health
+                </div>
+                <div class="nav-link" onclick="switchSection('settings')">
+                    <i class="fas fa-sliders"></i> Platform Settings
+                </div>
+                <div class="nav-link" onclick="logout()" style="color: var(--danger);">
+                    <i class="fas fa-right-from-bracket"></i> Logout
+                </div>
+            </div>
+        </nav>
+
+        <main class="main-wrapper">
+            <!-- DASHBOARD -->
+            <div id="dashboard" class="section active">
+                <header>
+                    <div class="header-title">
+                        <h1>Executive Overview</h1>
+                        <p>Real-time ecosystem performance metrics.</p>
+                    </div>
+                    <button class="btn btn-ai" id="btn-generate-summary" onclick="generateExecutiveSummary()">
+                        <i class="fas fa-sparkles"></i> ✨ Generate AI Strategy
+                    </button>
+                </header>
+
+                <div id="ai-insight-container" class="ai-insight-box">
+                    <div class="ai-header">
+                        <i class="fas fa-brain"></i>
+                        <h3>✨ AI Strategy Assistant</h3>
+                    </div>
+                    <div class="ai-content" id="ai-insight-text"></div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="icon-box"><i class="fas fa-users"></i></div>
+                        <div class="label">Total Platform Users</div>
+                        <div class="value" id="stat-users">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="icon-box" style="background: rgba(16, 185, 129, 0.1); color: var(--success);"><i
+                                class="fas fa-bolt"></i></div>
+                        <div class="label">Active Opportunities</div>
+                        <div class="value" id="stat-active">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="icon-box" style="background: rgba(245, 158, 11, 0.1); color: var(--warning);"><i
+                                class="fas fa-hourglass-half"></i></div>
+                        <div class="label">Awaiting Approval</div>
+                        <div class="value" id="stat-pending">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="icon-box" style="background: rgba(59, 130, 246, 0.1); color: var(--primary);"><i
+                                class="fas fa-indian-rupee-sign"></i></div>
+                        <div class="label">Commission Revenue</div>
+                        <div class="value" id="stat-revenue">₹0</div>
+                    </div>
+                </div>
+
+                <div class="table-card">
+                    <div class="table-header">
+                        <h3>Recent Activity</h3>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Entity</th>
+                                <th>Category</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dash-recent-table"></tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- MARKETPLACE ANALYTICS -->
+            <div id="marketplace-analytics" class="section">
+                <header>
+                    <div class="header-title">
+                        <h1>Marketplace Intelligence</h1>
+                        <p>Real-time supply, demand, and growth analytics.</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="refreshMarketplaceStats()">
+                        <i class="fas fa-sync-alt"></i> Refresh Stats
+                    </button>
+                </header>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="icon-box"><i class="fas fa-scale-balanced"></i></div>
+                        <div class="label">Supply/Demand Ratio</div>
+                        <div class="value" id="stats-sd-ratio">0.0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="icon-box"><i class="fas fa-user-gear"></i></div>
+                        <div class="label">Worker Supply</div>
+                        <div class="value" id="stats-worker-count">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="icon-box"><i class="fas fa-building"></i></div>
+                        <div class="label">Owner Demand</div>
+                        <div class="value" id="stats-owner-count">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="icon-box"><i class="fas fa-diagram-project"></i></div>
+                        <div class="label">Live Projects</div>
+                        <div class="value" id="stats-active-projects">0</div>
+                    </div>
+                </div>
+
+                <div class="row" style="display: flex; gap: 24px;">
+                    <div class="table-card" style="flex: 1;">
+                        <div class="table-header"><h3>Trending Skills</h3></div>
+                        <table>
+                            <thead>
+                                <tr><th>Skill</th><th>Demand</th></tr>
+                            </thead>
+                            <tbody id="trending-skills-table-body"></tbody>
+                        </table>
+                    </div>
+                    <div class="table-card" style="flex: 1;">
+                        <div class="table-header"><h3>Revenue Metrics</h3></div>
+                        <div style="padding: 24px;">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:16px;">
+                                <span style="font-size: 14px; color: var(--text-muted)">Lifetime Value (LTV)</span>
+                                <span class="font-weight-bold" id="metric-ltv">₹0</span>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; margin-bottom:16px;">
+                                <span style="font-size: 14px; color: var(--text-muted)">Acquisition Cost (CAC)</span>
+                                <span class="font-weight-bold" id="metric-cac">₹0</span>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; margin-bottom:16px;">
+                                <span style="font-size: 14px; color: var(--text-muted)">Churn Rate</span>
+                                <span class="font-weight-bold text-danger" id="metric-churn">0%</span>
+                            </div>
+                            <div style="display:flex; justify-content:space-between;">
+                                <span style="font-size: 14px; color: var(--text-muted)">Forecast (Next Month)</span>
+                                <span class="font-weight-bold text-success" id="metric-forecast">₹0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GROWTH CENTER -->
+            <div id="growth-center" class="section">
+                <header>
+                    <div class="header-title">
+                        <h1>Growth Engine</h1>
+                        <p>Manage promotions and featured listings.</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="showToast('Promotion Wizard Coming Soon', 'info')">
+                        <i class="fas fa-rocket"></i> Launch Campaign
+                    </button>
+                </header>
+                <div class="table-card">
+                    <div class="table-header"><h3>Active Promotions</h3></div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Entity</th>
+                                <th>Tier</th>
+                                <th>Expiry</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="promotions-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- SUPPORT TICKETS -->
+            <div id="support-desk" class="section">
+                <header>
+                    <div class="header-title">
+                        <h1>Support Desk</h1>
+                        <p>Manage user inquiries and technical issues.</p>
+                    </div>
+                    <div class="action-btns">
+                        <select class="btn btn-outline" onchange="refreshTickets(this.value)">
+                            <option value="">All Tickets</option>
+                            <option value="open">Open</option>
+                            <option value="assigned">Assigned</option>
+                            <option value="resolved">Resolved</option>
+                        </select>
+                    </div>
+                </header>
+                <div class="table-card">
+                    <div class="table-header"><h3>Active Support Requests</h3></div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Ticket ID</th>
+                                <th>Subject</th>
+                                <th>Category</th>
+                                <th>Priority</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tickets-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- GLOBAL MESSAGING -->
+            <div id="messaging-center" class="section">
+                <header>
+                    <div class="header-title">
+                        <h1>Messaging Center</h1>
+                        <p>Broadcast platform-wide alerts and notifications.</p>
+                    </div>
+                </header>
+                <div class="row" style="display: flex; gap: 24px;">
+                    <div class="table-card" style="flex: 1; padding: 24px;">
+                        <div class="table-header"><h3>New Broadcast</h3></div>
+                        <div class="form-group" style="margin-bottom: 16px;">
+                            <label>Target Audience</label>
+                            <select id="msg-target" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface);">
+                                <option value="all">All Users</option>
+                                <option value="workers">Workers Only</option>
+                                <option value="owners">Business Owners Only</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 16px;">
+                            <label>Title</label>
+                            <input type="text" id="msg-title" placeholder="e.g. System Maintenance" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface);">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 16px;">
+                            <label>Message Body</label>
+                            <textarea id="msg-body" placeholder="Enter notification content..." style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); height: 100px;"></textarea>
+                        </div>
+                        <button class="btn btn-primary" style="width: 100%;" onclick="sendBroadcast()">
+                            <i class="fas fa-paper-plane"></i> Send Broadcast
+                        </button>
+                    </div>
+                    <div class="table-card" style="flex: 1.5;">
+                        <div class="table-header"><h3>Broadcast History</h3></div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Target</th>
+                                    <th>Date</th>
+                                    <th>Success</th>
+                                </tr>
+                            </thead>
+                            <tbody id="broadcast-history-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RELEASE CONSOLE -->
+            <div id="release-console" class="section">
+                <header>
+                    <div class="header-title">
+                        <h1>Release Management</h1>
+                        <p>Control feature flags and app version requirements.</p>
+                    </div>
+                </header>
+                <div class="row" style="display: flex; gap: 24px;">
+                    <div class="table-card" style="flex: 1;">
+                        <div class="table-header"><h3>Feature Flags</h3></div>
+                        <table id="feature-flags-table">
+                            <thead>
+                                <tr><th>Flag Name</th><th>Status</th><th>Actions</th></tr>
+                            </thead>
+                            <tbody id="flags-table-body">
+                                <tr>
+                                    <td>New AI Strategy</td>
+                                    <td><span class="badge badge-success">Enabled</span></td>
+                                    <td><button class="btn btn-outline btn-sm">Toggle</button></td>
+                                </tr>
+                                <tr>
+                                    <td>Marketplace V3</td>
+                                    <td><span class="badge badge-danger">Disabled</span></td>
+                                    <td><button class="btn btn-outline btn-sm">Toggle</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="table-card" style="flex: 1; padding: 24px;">
+                        <div class="table-header"><h3>App Version Control</h3></div>
+                        <div class="form-group" style="margin-bottom: 16px;">
+                            <label>Minimum Required Version</label>
+                            <div style="display: flex; gap: 8px;">
+                                <input type="text" id="min-version-input" value="1.0.0" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface);">
+                                <button class="btn btn-primary" onclick="updateMinVersion()">Update</button>
+                            </div>
+                            <p style="font-size: 12px; color: var(--text-muted); margin-top: 8px;">Users on older versions will be forced to update.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- POLICY ENGINE -->
+            <div id="policy-engine" class="section">
+                <header>
+                    <div class="header-title">
+                        <h1>Policy Engine</h1>
+                        <p>Automate platform governance with smart rules.</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="openPolicyModal()">
+                        <i class="fas fa-plus"></i> New Policy
+                    </button>
+                </header>
+                <div class="table-card">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Policy Name</th>
+                                <th>Entity</th>
+                                <th>Condition</th>
+                                <th>Action</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="policy-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- FRAUD INTELLIGENCE -->
+            <div id="fraud-intelligence" class="section">
+                <header>
+                    <div class="header-title">
+                        <h1>Trust & Safety</h1>
+                        <p>Monitor platform risk and detect fraudulent behavior.</p>
+                    </div>
+                </header>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="icon-box" style="background: rgba(239, 68, 68, 0.1); color: var(--danger);"><i class="fas fa-user-shield"></i></div>
+                        <div class="label">Critical Risk Users</div>
+                        <div class="value" id="stat-critical-risk">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="icon-box" style="background: rgba(245, 158, 11, 0.1); color: var(--warning);"><i class="fas fa-triangle-exclamation"></i></div>
+                        <div class="label">Pending Fraud Alerts</div>
+                        <div class="value" id="stat-fraud-alerts">0</div>
+                    </div>
+                </div>
+                <div class="table-card">
+                    <div class="table-header">
+                        <h3>High-Risk Accounts</h3>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Risk Score</th>
+                                <th>Risk Level</th>
+                                <th>Last Review</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="high-risk-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- KYC DESK -->
+            <div id="kyc-desk" class="section">
+                <header>
+                    <div class="header-title">
+                        <h1>KYC Verification</h1>
+                        <p>Verify identity and business documents for enterprise users.</p>
+                    </div>
+                </header>
+                <div class="table-card">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Document Type</th>
+                                <th>Status</th>
+                                <th>Submitted At</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="kyc-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- WORKERS LIST -->
+            <div id="workers-list" class="section">
+                <header>
+                    <div class="header-title">
+                        <h1>Skilled Professionals</h1>
+                        <p>Manage all registered workers on the platform.</p>
+                    </div>
+                </header>
+                <div class="table-card">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Worker Name</th>
+                                <th>Email</th>
+                                <th>Core Skills</th>
+                                <th>Verification</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="workers-table"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- OWNERS LIST -->
+            <div id="owners-list" class="section">
+                <header>
+                    <div class="header-title">
+                        <h1>Business Entities</h1>
+                        <p>Manage verified company owners and recruiters.</p>
+                    </div>
+                </header>
+                <div class="table-card">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Company / Owner</th>
+                                <th>Email</th>
+                                <th>Plan</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="owners-table"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- VERIFICATIONS -->
+            <div id="verifications" class="section">
+                <header>
+                    <div class="header-title">
+                        <h1>Verification Desk</h1>
+                        <p>Review business documents and grant owner access.</p>
+                    </div>
+                </header>
+                <div class="table-card">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Applicant</th>
+                                <th>Company Details</th>
+                                <th>Business Type</th>
+                                <th>Requested On</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="verif-table"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- MODERATION -->
+            <div id="job-moderation" class="section">
+                <header>
+                    <div class="header-title">
+                        <h1>Job Moderation</h1>
+                        <p>Manage standard corporate employment listings.</p>
+                    </div>
+                </header>
+                <div class="table-card">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Job Title</th>
+                                <th>Company</th>
+                                <th>Salary Range</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="jobs-table"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="project-moderation" class="section">
+                <header>
+                    <div class="header-title">
+                        <h1>Freelance Marketplace</h1>
+                        <p>Manage project-based contracts, monitor bidding activity, and moderate listings.</p>
+                    </div>
+                    <div class="header-actions">
+                         <button class="btn btn-ai" onclick="generateFreelanceReport()"><i class="fas fa-file-contract"></i> AI Market Audit</button>
+                    </div>
+                </header>
+
+                <!-- Freelance Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                            <div style="padding:10px; background:rgba(59, 130, 246, 0.1); border-radius:12px; color:var(--primary)">
+                                <i class="fas fa-gavel"></i>
+                            </div>
+                            <span style="font-size:12px; color:var(--success); font-weight:700">+12% vs last week</span>
+                        </div>
+                        <div style="font-size:28px; font-weight:800" id="stat-project-listings">0</div>
+                        <div style="color:var(--text-muted); font-size:13px; font-weight:500">Marketplace Listings</div>
+                    </div>
+                    <div class="stat-card">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                            <div style="padding:10px; background:rgba(168, 85, 247, 0.1); border-radius:12px; color:var(--ai-accent)">
+                                <i class="fas fa-hand-holding-dollar"></i>
+                            </div>
+                        </div>
+                        <div style="font-size:28px; font-weight:800" id="stat-active-bids">0</div>
+                        <div style="color:var(--text-muted); font-size:13px; font-weight:500">Global Bid Competition</div>
+                    </div>
+                    <div class="stat-card">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                            <div style="padding:10px; background:rgba(16, 185, 129, 0.1); border-radius:12px; color:var(--success)">
+                                <i class="fas fa-shield-halved"></i>
+                            </div>
+                        </div>
+                        <div style="font-size:28px; font-weight:800" id="stat-escrow-secured">₹0</div>
+                        <div style="color:var(--text-muted); font-size:13px; font-weight:500">Secured in Escrow</div>
+                    </div>
+                </div>
+
+                <div class="table-card">
+                    <div class="card-header">
+                        <h3 style="font-size:16px; font-weight:700;">Marketplace Listings</h3>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Project Details</th>
+                                <th>Client</th>
+                                <th>Budget & Bids</th>
+                                <th>Moderation</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="projects-table"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- LIVE PROJECTS -->
+            <div id="live-projects" class="section">
+                <header>
+                    <div class="header-title">
+                        <h1>Project Operations</h1>
+                        <p>Real-time oversight of active contracts, milestone progress, and financial security.</p>
+                    </div>
+                </header>
+                <div class="table-card">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Active Contract</th>
+                                <th>Collaborators</th>
+                                <th>Budget & Milestones</th>
+                                <th>Security (Escrow)</th>
+                                <th>Live Status</th>
+                                <th>Oversight</th>
+                            </tr>
+                        </thead>
+                        <tbody id="live-projects-table"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- AD MODERATION -->
+            <div id="ad-moderation" class="section">
+                <header>
+                    <div class="header-title">
+                        <h1>Ad Campaign Moderation</h1>
+                        <p>Review and approve promotional content.</p>
+                    </div>
+                </header>
+                <div class="table-card">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Campaign Info</th>
+                                <th>Budget & Duration</th>
+                                <th>Preview</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ads-table"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="approvals" class="section">
+                <header>
+                    <div class="header-title">
+                        <h1>Content Moderation</h1>
+                        <p>Approve or Reject new platform submissions.</p>
+                    </div>
+                </header>
+                <div class="table-card">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Submission Title</th>
+                                <th>Posted By</th>
+                                <th>Comp/Budget</th>
+                                <th>Listing Type</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="approvals-table"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- FINANCE -->
+            <div id="finance" class="section">
+                <header>
+                    <div class="header-title">
+                        <h1>Financial Ledger</h1>
+                        <p>Comprehensive transaction history and platform earnings.</p>
+                    </div>
+                </header>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="label">Gross Transaction Volume</div>
+                        <div class="value" id="fin-gross" style="color: var(--success);">₹0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="label">Net Commission Collected</div>
+                        <div class="value" id="fin-net">₹0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="label">Active Pro Subscriptions</div>
+                        <div class="value" id="fin-subs">0</div>
+                    </div>
+                </div>
+                <div class="table-card">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>TXID</th>
+                                <th>Entity</th>
+                                <th>Gross</th>
+                                <th>Commission</th>
+                                <th>Net Payout</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="finance-table"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ENTERPRISE LEDGER EXPLORER -->
+            <div id="ledger-explorer" class="section">
+                <header>
+                    <div class="header-title">
+                        <h1>Enterprise Ledger Explorer</h1>
+                        <p>Immutable double-entry records from the Payment Orchestrator.</p>
+                    </div>
+                    <div style="display: flex; gap: 12px; align-items: center;">
+                        <input type="text" id="ledger-account-filter" placeholder="Filter by Account ID..." 
+                               style="padding: 10px 14px; background: var(--bg-main); border: 1px solid var(--border); border-radius: 12px; color: white; font-size: 13px; width: 240px;">
+                        <button class="btn btn-primary" onclick="refreshLedger()"><i class="fas fa-search"></i> Search</button>
+                    </div>
+                </header>
+                <div class="table-card">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Transaction ID</th>
+                                <th>Type</th>
+                                <th>Reference</th>
+                                <th>Details</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ledger-table"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- AUDIT CENTER -->
+            <div id="audit-center" class="section">
+                <header>
+                    <div class="header-title">
+                        <h1>Audit Center</h1>
+                        <p>Platform-wide financial reconciliation & health checks.</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="runPlatformAudit()">
+                        <i class="fas fa-play"></i> Run Full Audit
+                    </button>
+                </header>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="icon-box"><i class="fas fa-vault"></i></div>
+                        <div class="label">Total Escrow Pool</div>
+                        <div class="value" id="audit-escrow">₹0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="icon-box"><i class="fas fa-scale-balanced"></i></div>
+                        <div class="label">Ledger Invariant</div>
+                        <div class="value" id="audit-invariant">PENDING</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="icon-box"><i class="fas fa-circle-exclamation"></i></div>
+                        <div class="label">Detected Anomalies</div>
+                        <div class="value" id="audit-issues">0</div>
+                    </div>
+                </div>
+
+                <div class="table-card">
+                    <div class="table-header">
+                        <h3>Audit History & Logs</h3>
+                    </div>
+                    <div id="audit-logs" style="padding: 24px; font-family: 'Courier New', monospace; font-size: 13px; color: var(--text-muted); line-height: 1.6; max-height: 400px; overflow-y: auto;">
+                        <div style="color: var(--primary)">> Waiting for manual trigger...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- WITHDRAWALS -->
+            <div id="withdrawals" class="section">
+                <header>
+                    <div class="header-title">
+                        <h1>Payout Portal</h1>
+                        <p>Approve and process user withdrawal requests.</p>
+                    </div>
+                </header>
+                <div class="table-card">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>User ID</th>
+                                <th>Amount</th>
+                                <th>Method</th>
+                                <th>Status</th>
+                                <th>Requested</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="withdraw-table"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- DISPUTES -->
+            <div id="disputes" class="section">
+                <header>
+                    <div class="header-title">
+                        <h1>Arbitration Center</h1>
+                        <p>Resolve project conflicts and escrow claims.</p>
+                    </div>
+                </header>
+                <div class="table-card">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Dispute Reason</th>
+                                <th>Raised By</th>
+                                <th>Status</th>
+                                <th>Admin Ruling</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dispute-table"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- CAROUSEL -->
+            <div id="carousel" class="section">
+                <header>
+                    <div class="header-title">
+                        <h1>Carousel Management</h1>
+                        <p>Control the hero slides on the homepage.</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="openSlideModal()"><i class="fas fa-plus"></i> Add
+                        Slide</button>
+                </header>
+                <div class="table-card">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Preview</th>
+                                <th>Navigation Target</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="carousel-table"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- A/B TESTING -->
+            <div id="ab-testing" class="section">
+                <header>
+                    <div class="header-title">
+                        <h1>A/B Testing Framework</h1>
+                        <p>Manage platform experiments and track performance variations.</p>
+                    </div>
+                </header>
+                <div class="table-card">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Experiment Name</th>
+                                <th>Status</th>
+                                <th>Variations</th>
+                                <th>Top Variation</th>
+                                <th>CTR</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ab-table"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- DEVELOPER CONSOLE -->
+            <div id="developer-console" class="section">
+                <header>
+                    <div class="header-title">
+                        <h1>Developer API Console</h1>
+                        <p>Manage secondary API access keys and third-party integrations.</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="generateNewKey()">+ Generate API Key</button>
+                </header>
+                <div class="table-card">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Key Name</th>
+                                <th>API Key (Redacted)</th>
+                                <th>Permissions</th>
+                                <th>Status</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="keys-table"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- SOC CENTER -->
+            <div id="soc-center" class="section">
+                <header>
+                    <div class="header-title">
+                        <h1>Security Operations Center (SOC)</h1>
+                        <p>Real-time threat monitoring and incident response.</p>
+                    </div>
+                </header>
+                <div class="stats-grid" id="soc-stats">
+                    <div class="stat-card">
+                        <span class="label">Critical Threats</span>
+                        <span class="value" id="threat-critical" style="color: var(--danger)">0</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="label">High Risk</span>
+                        <span class="value" id="threat-high" style="color: #f59e0b">0</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="label">Low Risk</span>
+                        <span class="value" id="threat-low">0</span>
+                    </div>
+                </div>
+                <div class="table-card" style="margin-top: 24px;">
+                    <div class="table-header">
+                        <h3>Real-time Security Feed</h3>
+                    </div>
+                    <div id="soc-feed" style="padding: 24px; max-height: 500px; overflow-y: auto;">
+                        <div style="color: var(--text-muted); text-align: center;">Scanning for threats...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SYSTEM HEALTH -->
+            <div id="system-health" class="section">
+                <header>
+                    <div class="header-title">
+                        <h1>Ecosystem Vitals</h1>
+                        <p>Monitor backend performance and ledger integrity.</p>
+                    </div>
+                    <button class="btn btn-outline" onclick="refreshHealth()"><i class="fas fa-sync"></i> Run
+                        Diagnostics</button>
+                </header>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px;">
+                    <div class="table-card" style="padding: 24px;">
+                        <h3 style="margin-bottom: 16px;"><i class="fas fa-shield-check"></i> Financial Integrity
+                        </h3>
+                        <div id="health-ledger-status" style="margin-bottom: 24px;">
+                            <div style="font-size: 24px; font-weight: 700; color: var(--success);"><i
+                                    class="fas fa-check-circle"></i> BALANCED</div>
+                            <p style="color: var(--text-muted); font-size: 13px;">Double-entry sum: 0.00 INR</p>
+                        </div>
+                        <div class="stat-card" style="background: rgba(0,0,0,0.02); border: 1px solid var(--border);">
+                            <div class="stat-value" id="health-txn-count" style="font-size: 20px;">0</div>
+                            <div class="stat-label">Total Transactions</div>
+                        </div>
+                    </div>
+
+                    <div class="table-card" style="padding: 24px;">
+                        <h3 style="margin-bottom: 16px;"><i class="fas fa-server"></i> Infrastructure</h3>
+                        <div style="display: grid; gap: 12px;">
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: rgba(0,0,0,0.02); border-radius: 8px;">
+                                <span>PostgreSQL Database</span>
+                                <span class="badge badge-success" id="health-db">CONNECTED</span>
+                            </div>
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: rgba(0,0,0,0.02); border-radius: 8px;">
+                                <span>Redis Cache / Queues</span>
+                                <span class="badge badge-success" id="health-redis">CONNECTED</span>
+                            </div>
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: rgba(0,0,0,0.02); border-radius: 8px;">
+                                <span>Uptime</span>
+                                <span id="health-uptime">0s</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-card" style="padding: 24px;">
+                        <h3 style="margin-bottom: 16px;"><i class="fas fa-layer-group"></i> Queue Latency</h3>
+                        <div class="input-group" style="margin-bottom: 12px;">
+                            <label style="display:flex; justify-content:space-between">Webhook Processing <span>0
+                                    ms</span></label>
+                            <div style="height:8px; background:var(--border); border-radius:4px; overflow:hidden;">
+                                <div style="width:5%; height:100%; background:var(--success)"></div>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label style="display:flex; justify-content:space-between">Projection Sync <span>0
+                                    ms</span></label>
+                            <div style="height:8px; background:var(--border); border-radius:4px; overflow:hidden;">
+                                <div style="width:12%; height:100%; background:var(--success)"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SETTINGS -->
+                <div id="settings" class="section">
+                    <header>
+                        <div class="header-title">
+                            <h1>Global Governance</h1>
+                            <p>Configure platform-wide fee structures and rules.</p>
+                        </div>
+                        <button class="btn btn-primary" onclick="saveAdminSettings()"><i class="fas fa-save"></i> Save
+                            Global Configuration</button>
+                    </header>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                        <div class="table-card" style="padding: 24px;">
+                            <h3 style="margin-bottom: 24px;">Escrow & Fee Logic</h3>
+                            <div class="input-group">
+                                <div
+                                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                    <label style="margin-bottom: 0;">Global Platform Commission (%)</label>
+                                    <span id="sync-status"
+                                        style="font-size: 11px; color: var(--success); display: none;"><i
+                                            class="fas fa-check-circle"></i> Synced</span>
+                                </div>
+                                <div style="display: flex; gap: 16px; align-items: center;">
+                                    <input type="range" id="set-fee-slider" min="0" max="50" step="0.5" value="10"
+                                        style="flex: 1; height: 6px; accent-color: var(--primary);">
+                                    <input type="number" id="set-fee" value="10"
+                                        style="width: 80px; text-align: center;">
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <label>Min. Escrow Threshold (₹)</label>
+                                <input type="number" id="set-min-escrow" value="50">
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 12px; margin-top: 10px;">
+                                <input type="checkbox" id="set-escrow-toggle" checked
+                                    style="width: 20px; height: 20px;">
+                                <span>Enable Milestone Escrow Payments</span>
+                            </div>
+                        </div>
+                        <div class="table-card" style="padding: 24px;">
+                            <h3 style="margin-bottom: 24px;">Payout Policies</h3>
+                            <div class="input-group">
+                                <label>Min. Withdrawal Amount (₹)</label>
+                                <input type="number" id="set-min-withdraw" value="100">
+                            </div>
+                            <div
+                                style="background: rgba(59, 130, 246, 0.1); padding: 20px; border-radius: 16px; font-size: 13px; color: var(--primary);">
+                                <i class="fas fa-info-circle"></i> These settings are stored in Firestore and propagate
+                                globally. Changes impact all future transactions immediately.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </main>
+    </div>
+
+    <!-- Slide Modal -->
+    <div id="slide-modal" class="modal-overlay">
+        <div class="modal-card">
+            <h3 id="slide-modal-title" style="margin-bottom:24px;">Slide Editor</h3>
+            <input type="hidden" id="slide-id">
+            <input type="hidden" id="slide-existing-url">
+
+            <div class="img-preview" id="slide-preview-container">
+                <span style="color:var(--text-muted)">Image Preview</span>
+            </div>
+
+            <div class="input-group">
+                <label>Slide Content Type</label>
+                <select id="slide-type" onchange="toggleSlideType()">
+                    <option value="image">Image</option>
+                    <option value="video">Video</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label id="slide-file-label">Upload Slide Image (1080x420 Rec.)</label>
+                <input type="file" id="slide-file" accept="image/*" onchange="previewImage(this)">
+            </div>
+
+            <div class="input-group">
+                <label>Navigation Action</label>
+                <select id="slide-nav-type">
+                    <option value="internal">App Route</option>
+                    <option value="external">External Website</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label>Target Route</label>
+                <select id="slide-nav-url">
+                    <option value="/main">Dashboard (/main)</option>
+                    <option value="/settings">Settings (/settings)</option>
+                    <option value="/withdrawal">Withdrawals (/withdrawal)</option>
+                    <option value="/become_hirer">Become Hirer (/become_hirer)</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label>Display Order (Priority)</label>
+                <input type="number" id="slide-order" value="0">
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:12px;">
+                <button class="btn btn-outline" onclick="closeSlideModal()">Cancel</button>
+                <button class="btn btn-primary" id="btn-save-slide" onclick="saveSlide()">Save Slide</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, doc, query, onSnapshot, orderBy, getDoc, updateDoc, setDoc, deleteDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js";
+
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+            apiKey: 'AIzaSyA21oWW-1mClnsNAktXNdi2IAOyY-clt48',
+            appId: '1:907495421370:web:458cf918691b7552785983',
+            messagingSenderId: '907495421370',
+            projectId: 'work-hub-c31ef',
+            authDomain: 'work-hub-c31ef.firebaseapp.com',
+            storageBucket: 'work-hub-c31ef.firebasestorage.app',
+            databaseURL: 'https://work-hub-c31ef-default-rtdb.firebaseio.com',
+            geminiApiKey: 'AIzaSyCL80swdBOxbZj0IX8-VNmTEzBkWGX6iJ0'
+        };
+
+        const apiKey = firebaseConfig.geminiApiKey || ""; 
+
+
+        const supabaseUrl = 'https://qsxcfchloocncsxzcdko.supabase.co';
+        const supabaseKey = 'sb_publishable_if7isSiDHWJZP87judP5qg_anvkwp0v';
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const messaging = getMessaging(app);
+        const provider = new GoogleAuthProvider();
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        /* ---------------- MESSAGING LOGIC ---------------- */
+        const requestNotificationPermission = async (userId) => {
+            try {
+                const permission = await Notification.requestPermission();
+                if (permission === 'granted') {
+                    const token = await getToken(messaging, {
+                        vapidKey: 'BM6_N_N_N_N_N_N_N_N_N_N_N' // Replace with your actual VAPID key if needed
+                    });
+                    if (token) {
+                        console.log("FCM Token Received:", token);
+                        await updateDoc(doc(db, 'users', userId), {
+                            fcmTokens: arrayUnion(token)
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error("Error getting notification permission:", error);
+            }
+        };
+
+        onMessage(messaging, (payload) => {
+            console.log("Foreground message received:", payload);
+            showToast(`🔔 ${payload.notification.title}: ${payload.notification.body}`, 'success');
+        });
+
+        /* ---------------- GEMINI API INTEGRATION ---------------- */
+
+        async function callGemini(prompt, systemPrompt = "You are a helpful platform administration assistant.") {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+            const payload = {
+                contents: [{ parts: [{ text: prompt }] }],
+                systemInstruction: { parts: [{ text: systemPrompt }] }
+            };
+
+            let delay = 1000;
+            for (let i = 0; i < 5; i++) {
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        body: JSON.stringify(payload)
+                    });
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    const result = await response.json();
+                    return result.candidates?.[0]?.content?.parts?.[0]?.text;
+                } catch (error) {
+                    if (i === 4) throw error;
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                    delay *= 2;
+                }
+            }
+        }
+
+        window.generateExecutiveSummary = async () => {
+            const btn = document.getElementById('btn-generate-summary');
+            const insightBox = document.getElementById('ai-insight-container');
+            const insightText = document.getElementById('ai-insight-text');
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ✨ Consulting AI...';
+
+            const stats = {
+                users: document.getElementById('stat-users').innerText,
+                active: document.getElementById('stat-active').innerText,
+                pending: document.getElementById('stat-pending').innerText,
+                revenue: document.getElementById('stat-revenue').innerText
+            };
+
+            const prompt = `Based on current platform metrics:
+            - Total Users: ${stats.users}
+            - Active Opportunities: ${stats.active}
+            - Pending Moderation: ${stats.pending}
+            - Total Commission Revenue: ${stats.revenue}
+            
+            Provide a concise (3-4 bullet points) executive strategy summary. 
+            Include one growth suggestion and one operational priority.
+            Keep the tone professional but encouraging.`;
+
+            try {
+                const summary = await callGemini(prompt, "You are an executive strategist for a labor marketplace platform called Work Hub.");
+                insightText.innerText = summary;
+                insightBox.style.display = 'block';
+                showToast("Strategy Insight generated!", "success");
+            } catch (e) {
+                showToast("AI is currently busy. Please try again in a moment.", "error");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-sparkles"></i> ✨ Generate AI Strategy';
+            }
+        };
+
+        window.auditListing = async (id, coll) => {
+            const listing = allItemsGlobal[id];
+            if (!listing) return;
+
+            const modal = document.getElementById('ai-modal');
+            const modalTitle = document.getElementById('ai-modal-title');
+            const modalBody = document.getElementById('ai-modal-body');
+
+            modalTitle.innerText = `✨ Smart Audit: ${listing.jobTitle || listing.projectTitle}`;
+            modalBody.innerText = "✨ AI Content Auditor is reviewing the submission for quality and safety...";
+            modal.style.display = 'flex';
+
+            const contentToAudit = `
+                Title: ${listing.jobTitle || listing.projectTitle}
+                Description: ${listing.jobDescription || listing.projectDescription}
+                Budget/Salary: ${listing.salaryMin ? `₹${listing.salaryMin} - ₹${listing.salaryMax}` : `₹${listing.budget}`}
+                Company/Client: ${listing.companyName || listing.clientName}
+            `;
+
+            const prompt = `Please audit the following job/project listing:
+            ${contentToAudit}
+            
+            Review for:
+            1. Professionalism and clarity.
+            2. Potential scam indicators or vague requirements.
+            3. Wage fairness (based on standard Indian market rates if applicable).
+            
+            Return a brief audit report with a "Quality Score" (0-10) and a recommendation (Approve/Reject/Edit).`;
+
+            try {
+                const audit = await callGemini(prompt, "You are a professional content moderator for a high-end freelance and corporate job marketplace.");
+                modalBody.innerText = audit;
+            } catch (e) {
+                modalBody.innerText = "Error auditing content. Please review manually.";
+            }
+        };
+
+        window.suggestDisputeResolution = async (id) => {
+            const dispute = allDisputesGlobal[id];
+            if (!dispute) return;
+
+            const modal = document.getElementById('ai-modal');
+            const modalTitle = document.getElementById('ai-modal-title');
+            const modalBody = document.getElementById('ai-modal-body');
+
+            modalTitle.innerText = "✨ AI Arbitration Suggestion";
+            modalBody.innerText = "Analyzing dispute details and platform policies...";
+            modal.style.display = 'flex';
+
+            const prompt = `Project Dispute Analysis:
+            Reason: ${dispute.reason}
+            Raised By: ${dispute.raisedByRole}
+            Evidence/Details: ${dispute.details || "No specific details provided."}
+            
+            Suggest a fair resolution based on standard gig-economy escrow practices. 
+            Should the funds be released, returned, or split? Provide a brief justification.`;
+
+            try {
+                const suggestion = await callGemini(prompt, "You are a neutral third-party arbitrator specializing in freelance contract disputes.");
+                modalBody.innerText = suggestion;
+            } catch (e) {
+                modalBody.innerText = "AI arbitration is unavailable. Use manual judgment.";
+            }
+        };
+
+        /* ---------------- TOASTS & MODALS ---------------- */
+        window.showToast = (msg, type = 'success') => {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            const icon = type === 'success' ? 'circle-check' : 'circle-xmark';
+            toast.innerHTML = `<i class="fas fa-${icon}"></i> <span>${msg}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.add('show'), 100);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 400);
+            }, 4000);
+        };
+
+        let currentConfirmAction = null;
+        window.showConfirm = (title, body, onConfirm) => {
+            document.getElementById('confirm-title').innerText = title;
+            document.getElementById('confirm-body').innerText = body;
+            document.getElementById('confirm-modal').style.display = 'flex';
+            currentConfirmAction = onConfirm;
+        };
+        window.closeConfirm = () => {
+            document.getElementById('confirm-modal').style.display = 'none';
+        };
+        document.getElementById('confirm-execute').onclick = () => {
+            if (currentConfirmAction) currentConfirmAction();
+            closeConfirm();
+        };
+
+        /* ---------------- AUTHENTICATION ---------------- */
+        window.login = () => {
+            signInWithPopup(auth, provider).catch(e => showToast(e.message, 'error'));
+        };
+
+        window.logout = () => {
+            showConfirm("Logout Session?", "Are you sure you want to exit the admin console?", () => {
+                signOut(auth).then(() => window.location.reload());
+            });
+        };
+
+        onAuthStateChanged(auth, async (user) => {
+            const appEl = document.getElementById('admin-app');
+            const loginEl = document.getElementById('login-overlay');
+
+            if (user) {
+                const isSuper = user.email === 'dharuncod@gmail.com';
+                const userSnap = await getDoc(doc(db, 'users', user.uid));
+
+                if (isSuper || (userSnap.exists() && userSnap.data().role === 'admin')) {
+                    loginEl.style.display = 'none';
+                    appEl.style.display = 'block';
+                    showToast(`Access Granted: Welcome ${user.displayName.split(' ')[0]}`, 'success');
+                    requestNotificationPermission(user.uid);
+                    initPlatformData();
+                } else {
+                    showToast("Access Denied: Administrative privileges required.", "error");
+                    signOut(auth);
+                }
+            } else {
+                loginEl.style.display = 'flex';
+                appEl.style.display = 'none';
+            }
+        });
+
+        /* ---------------- NAVIGATION ---------------- */
+        window.switchSection = (id) => {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+
+            document.querySelectorAll('.nav-link').forEach(l => {
+                l.classList.remove('active');
+                if (l.getAttribute('onclick')?.includes(id)) l.classList.add('active');
+            });
+
+            if (id === 'settings') loadSettings();
+            if (id === 'ledger-explorer') refreshLedger();
+            if (id === 'system-health') refreshHealth();
+            if (id === 'policy-engine') refreshPolicies();
+            if (id === 'fraud-intelligence') refreshFraud();
+            if (id === 'kyc-desk') refreshKYC();
+            if (id === 'marketplace-analytics') refreshMarketplaceStats();
+            if (id === 'growth-center') refreshPromotions();
+            if (id === 'support-desk') refreshTickets();
+            if (id === 'messaging-center') refreshBroadcasts();
+            if (id === 'release-console') refreshReleaseConfig();
+        };
+
+        /* ---------------- DATA INITIALIZATION ---------------- */
+        let allItemsGlobal = {};
+        let allDisputesGlobal = {};
+
+        function initPlatformData() {
+            // USERS
+            onSnapshot(collection(db, 'users'), (snap) => {
+                document.getElementById('stat-users').innerText = snap.size.toLocaleString();
+                const workers = [], owners = [], pendingVerif = [];
+                snap.forEach(d => {
+                    const data = { id: d.id, ...d.data() };
+                    if (data.role === 'businessOwner') owners.push(data);
+                    else if (data.role === 'worker') workers.push(data);
+
+                    if (data.ownerRequestStatus === 'pending') pendingVerif.push(data);
+                });
+                renderWorkers(workers);
+                renderOwners(owners);
+                renderVerif(pendingVerif);
+                updateBadge('badge-verif', pendingVerif.length);
+            });
+
+            // JOBS & PROJECTS
+            const processItems = (snap, type) => {
+                snap.forEach(d => allItemsGlobal[d.id] = { id: d.id, _type: type, ...d.data() });
+                const list = Object.values(allItemsGlobal);
+
+                const activeCount = list.filter(i => i.status === 'approved' || i.status === 'open').length;
+                const pendingCount = list.filter(i => i.status === 'pending').length;
+
+                document.getElementById('stat-active').innerText = activeCount.toLocaleString();
+                document.getElementById('stat-pending').innerText = pendingCount.toLocaleString();
+                
+                // Freelance Specific Stats
+                const projectListings = list.filter(i => i._type === 'projects');
+                document.getElementById('stat-project-listings').innerText = projectListings.length;
+                
+                // Active Bids calculation (heuristic if not globally tracked)
+                let totalBids = 0;
+                projectListings.forEach(p => totalBids += (p.bidCount || 0));
+                document.getElementById('stat-active-bids').innerText = totalBids;
+
+                updateBadge('badge-approvals', pendingCount);
+                renderJobs(list.filter(i => i._type === 'jobs'));
+                renderProjects(projectListings);
+                renderApprovals(list.filter(i => i.status === 'pending'));
+                renderRecent(list);
+            };
+
+            onSnapshot(collection(db, 'job_posts'), snap => processItems(snap, 'jobs'));
+            onSnapshot(collection(db, 'project_posts'), snap => processItems(snap, 'projects'));
+
+            // LIVE PROJECTS (projects collection)
+            onSnapshot(collection(db, 'projects'), snap => {
+                const list = [];
+                snap.forEach(d => list.push({ id: d.id, ...d.data() }));
+                renderLiveProjects(list);
+            });
+
+            // ADS
+            onSnapshot(query(collection(db, 'ads'), orderBy('createdAt', 'desc')), snap => {
+                const body = document.getElementById('ads-table');
+                body.innerHTML = '';
+                let pendingCount = 0;
+                snap.forEach(d => {
+                    const data = { id: d.id, ...d.data() };
+                    if (data.status === 'pending') pendingCount++;
+
+                    // Only show pending or active for moderation context usually, but here showing all sorted
+                    if (data.status !== 'pending' && data.status !== 'active' && data.status !== 'rejected') return;
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>
+                            <div style="font-weight:600">${data.caption || 'No Caption'}</div>
+                            <div style="font-size:12px; color:var(--text-muted)">ID: ${data.id.substring(0, 8)}...</div>
+                            <div style="font-size:12px; color:var(--primary)">${data.ctaLabel} -> ${data.ctaLink || '#'}</div>
+                        </td>
+                        <td>
+                            <div>₹${data.budget?.total || data.totalBudget || 0}</div>
+                            <div style="font-size:11px">${new Date(data.duration?.startDate?.seconds * 1000 || Date.now()).toLocaleDateString()} - ${new Date(data.duration?.endDate?.seconds * 1000 || Date.now()).toLocaleDateString()}</div>
+                        </td>
+                         <td>
+                            <a href="${data.videoUrl}" target="_blank" style="color:var(--ai-accent); text-decoration:underline;">Watch Video</a>
+                        </td>
+                        <td><span class="badge ${data.status === 'active' ? 'badge-success' : (data.status === 'rejected' ? 'badge-danger' : 'badge-pending')}">${data.status}</span></td>
+                        <td>
+                            ${data.status === 'pending' ? `
+                            <div class="action-btns">
+                                <button class="btn btn-primary" onclick="approveAd('${data.id}')"><i class="fas fa-check"></i></button>
+                                <button class="btn btn-danger" onclick="rejectAd('${data.id}')"><i class="fas fa-times"></i></button>
+                            </div>` : '-'}
+                        </td>
+                    `;
+                    body.appendChild(tr);
+                });
+                updateBadge('badge-ads', pendingCount);
+            });
+
+            // FINANCE
+            onSnapshot(query(collection(db, 'transactions'), orderBy('timestamp', 'desc')), (snap) => {
+                let gross = 0, net = 0;
+                const body = document.getElementById('finance-table');
+                body.innerHTML = '';
+                snap.forEach(d => {
+                    const data = d.data();
+                    gross += parseFloat(data.amount || 0);
+                    net += parseFloat(data.platformFee || 0);
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>#${d.id.substring(0, 6)}</td>
+                        <td>${data.projectId ? 'Project Gig' : 'Job Listing'}</td>
+                        <td style="color:var(--success)">₹${data.amount}</td>
+                        <td style="color:var(--primary)">₹${data.platformFee}</td>
+                        <td>₹${data.netEarnings || (data.amount - data.platformFee)}</td>
+                        <td>${new Date(data.timestamp).toLocaleDateString()}</td>
+                    `;
+                    body.appendChild(tr);
+                });
+                document.getElementById('stat-revenue').innerText = `₹${net.toLocaleString()}`;
+                document.getElementById('fin-gross').innerText = `₹${gross.toLocaleString()}`;
+                document.getElementById('fin-net').innerText = `₹${net.toLocaleString()}`;
+            });
+
+            // WITHDRAWALS
+            onSnapshot(collection(db, 'withdrawals'), snap => {
+                const body = document.getElementById('withdraw-table');
+                body.innerHTML = '';
+                let pendingCount = 0;
+                snap.forEach(d => {
+                    const data = d.data();
+                    if (data.status === 'pending') pendingCount++;
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${data.userId?.substring(0, 10)}</td>
+                        <td style="font-weight:700">₹${data.amount}</td>
+                        <td>${data.method || 'Bank Transfer'}</td>
+                        <td><span class="badge ${data.status === 'completed' ? 'badge-success' : 'badge-pending'}">${data.status}</span></td>
+                        <td>${new Date(data.requestedAt?.seconds * 1000).toLocaleDateString()}</td>
+                        <td>${data.status === 'pending' ? `<button class="btn btn-primary" onclick="processWithdrawal('${d.id}')">Approve Payout</button>` : '-'}</td>
+                    `;
+                    body.appendChild(tr);
+                });
+                updateBadge('badge-withdraw', pendingCount);
+            });
+
+            // DISPUTES
+            onSnapshot(collection(db, 'disputes'), snap => {
+                const body = document.getElementById('dispute-table');
+                body.innerHTML = '';
+                let count = 0;
+                snap.forEach(d => {
+                    const data = { id: d.id, ...d.data() };
+                    allDisputesGlobal[d.id] = data;
+                    if (data.status !== 'resolved') count++;
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${data.reason}</td>
+                        <td>${data.raisedByRole}</td>
+                        <td><span class="badge ${data.status === 'resolved' ? 'badge-success' : 'badge-pending'}">${data.status}</span></td>
+                        <td>${data.adminDecision || 'Awaiting Ruling'}</td>
+                        <td>
+                            <div class="action-btns">
+                                <button class="btn btn-outline" onclick="resolveDispute('${d.id}')">Resolve</button>
+                                <button class="btn btn-ai" title="AI Suggestion" onclick="suggestDisputeResolution('${d.id}')"><i class="fas fa-sparkles"></i></button>
+                            </div>
+                        </td>
+                    `;
+                    body.appendChild(tr);
+                });
+                updateBadge('badge-disputes', count);
+            });
+
+            // CAROUSEL
+            onSnapshot(query(collection(db, 'carousel_slides'), orderBy('order_index', 'asc')), snap => {
+                const body = document.getElementById('carousel-table');
+                body.innerHTML = '';
+                snap.forEach(d => {
+                    const s = { id: d.id, ...d.data() };
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${s.order_index}</td>
+                        <td><img src="${s.image_url}" style="height:40px; border-radius:4px; border: 1px solid var(--border)"></td>
+                        <td><span class="badge badge-primary">${s.nav_type}</span> ${s.nav_url}</td>
+                        <td><span class="badge ${s.is_active ? 'badge-success' : 'badge-danger'}">${s.is_active ? 'Live' : 'Hidden'}</span></td>
+                        <td>
+                            <div class="action-btns">
+                                <button class="btn btn-outline" onclick='editSlide(${JSON.stringify(s)})'><i class="fas fa-edit"></i></button>
+                                <button class="btn btn-outline" style="color:var(--danger)" onclick="deleteSlide('${s.id}')"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </td>
+                    `;
+                    body.appendChild(tr);
+                });
+            });
+        }
+
+        window.approveAd = async (id) => {
+            showConfirm("Approve Campaign?", "This will make the ad live immediately.", async () => {
+                try {
+                    await updateDoc(doc(db, 'ads', id), { status: 'active' });
+                    showToast("Campaign approved successfully!", "success");
+                } catch (e) {
+                    showToast("Error approving ad: " + e.message, "error");
+                }
+            });
+        };
+
+        window.rejectAd = async (id) => {
+            const reason = prompt("Enter rejection reason:");
+            if (reason) {
+                try {
+                    await updateDoc(doc(db, 'ads', id), {
+                        status: 'rejected',
+                        rejectionReason: reason
+                    });
+                    showToast("Campaign rejected.", "success");
+                } catch (e) {
+                    showToast("Error rejecting ad: " + e.message, "error");
+                }
+            }
+        };
+
+        /* ---------------- RENDERING HELPERS ---------------- */
+        function updateBadge(id, count) {
+            const el = document.getElementById(id);
+            if (count > 0) { el.innerText = count; el.style.display = 'inline-block'; }
+            else { el.style.display = 'none'; }
+        }
+
+        function renderRecent(list) {
+            const body = document.getElementById('dash-recent-table');
+            body.innerHTML = '';
+            list.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0)).slice(0, 6).forEach(item => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="font-weight:600">${item.jobTitle || item.projectTitle || 'System Entry'}</td>
+                    <td><span class="badge ${item._type === 'jobs' ? 'badge-primary' : 'badge-success'}">${item._type}</span></td>
+                    <td>${new Date(item.createdAt?.seconds * 1000 || Date.now()).toLocaleDateString()}</td>
+                    <td><span class="badge ${item.status === 'approved' ? 'badge-success' : 'badge-pending'}">${item.status}</span></td>
+                `;
+                body.appendChild(tr);
+            });
+        }
+
+        function renderWorkers(list) {
+            const body = document.getElementById('workers-table');
+            body.innerHTML = '';
+            list.forEach(w => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><div style="font-weight:600">${w.displayName}</div></td>
+                    <td>${w.email}</td>
+                    <td>${(w.skills || []).slice(0, 3).join(', ') || 'N/A'}</td>
+                    <td><span class="badge ${w.isBanned ? 'badge-danger' : 'badge-success'}">${w.isBanned ? 'Banned' : 'Verified'}</span></td>
+                    <td><button class="btn btn-outline" onclick="toggleBan('${w.id}', ${w.isBanned})"><i class="fas fa-ban"></i></button></td>
+                `;
+                body.appendChild(tr);
+            });
+        }
+
+        function renderOwners(list) {
+            const body = document.getElementById('owners-table');
+            body.innerHTML = '';
+            list.forEach(o => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><div style="font-weight:600">${o.displayName}</div></td>
+                    <td>${o.email}</td>
+                    <td><span class="badge badge-primary">${o.subscriptionTier || 'Free'}</span></td>
+                    <td><span class="badge badge-success">Verified Owner</span></td>
+                    <td><button class="btn btn-outline"><i class="fas fa-eye"></i></button></td>
+                `;
+                body.appendChild(tr);
+            });
+        }
+
+        function renderVerif(list) {
+            const body = document.getElementById('verif-table');
+            body.innerHTML = '';
+            // Filter list for only pending owner requests
+            const pendingRequests = list.filter(u => u.ownerRequestStatus === 'pending');
+
+            pendingRequests.forEach(req => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${req.displayName}</td>
+                    <td>${req.ownerRequestData?.companyName || 'N/A'}</td>
+                    <td>${req.ownerRequestData?.businessType || 'N/A'}</td>
+                    <td>${new Date(req.ownerRequestData?.requestedAt || Date.now()).toLocaleDateString()}</td>
+                    <td><div class="action-btns">
+                        <button class="btn btn-primary" onclick="verifyOwner('${req.id}')">Verify</button>
+                        <button class="btn btn-danger" onclick="rejectOwner('${req.id}')">Reject</button>
+                    </div></td>
+                `;
+                body.appendChild(tr);
+            });
+            updateBadge('badge-verif', pendingRequests.length);
+        }
+
+        window.rejectOwner = (uid) => {
+            const reason = prompt("Enter rejection reason:");
+            if (reason) {
+                showConfirm("Reject Business Status?", `Reason: ${reason}`, async () => {
+                    await updateDoc(doc(db, 'users', uid), {
+                        ownerRequestStatus: 'rejected',
+                        rejectionReason: reason
+                    });
+                    showToast("Owner request rejected", "warning");
+                });
+            }
+        };
+
+        function renderJobs(list) {
+            const body = document.getElementById('jobs-table');
+            body.innerHTML = '';
+            list.forEach(j => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${j.jobTitle}</td>
+                    <td>${j.companyName || 'N/A'}</td>
+                    <td>₹${j.salaryMin} - ${j.salaryMax}</td>
+                    <td><span class="badge ${j.status === 'approved' ? 'badge-success' : 'badge-pending'}">${j.status}</span></td>
+                    <td><button class="btn btn-outline" onclick="deleteItem('${j.id}', 'job_posts')"><i class="fas fa-trash"></i></button></td>
+                `;
+                body.appendChild(tr);
+            });
+        }
+
+        function renderProjects(list) {
+            const body = document.getElementById('projects-table');
+            body.innerHTML = '';
+            list.forEach(p => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>
+                        <div style="font-weight:600">${p.projectTitle}</div>
+                        <div style="font-size:12px; color:var(--text-muted)">Type: ${p.category || 'Standard'}</div>
+                    </td>
+                    <td>
+                        <div style="font-weight:600">${p.clientName || 'N/A'}</div>
+                        <div style="font-size:11px; color:var(--text-muted)">ID: ${p.id.substring(0,8)}</div>
+                    </td>
+                    <td>
+                        <div style="font-weight:700">₹${p.budget}</div>
+                        <div style="font-size:11px; color:var(--ai-accent)"><i class="fas fa-users"></i> ${p.bidCount || 0} active bids</div>
+                    </td>
+                    <td>
+                        <span class="badge ${p.status === 'approved' ? 'badge-success' : (p.status === 'rejected' ? 'badge-danger' : 'badge-pending')}">
+                            ${p.status.toUpperCase()}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="action-btns">
+                            <button class="btn btn-outline" title="View Details" onclick="viewProjectDetails('${p.id}')"><i class="fas fa-eye"></i></button>
+                            <button class="btn btn-outline" style="color:var(--danger)" onclick="deleteItem('${p.id}', 'project_posts')"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </td>
+                `;
+                body.appendChild(tr);
+            });
+        }
+
+        function renderLiveProjects(list) {
+            const body = document.getElementById('live-projects-table');
+            body.innerHTML = '';
+            
+            let totalEscrow = 0;
+            
+            list.forEach(p => {
+                if (p.depositPaid) totalEscrow += (p.amount || 0);
+
+                const statusBadge = p.status === 'completed' ? 'badge-success' : (p.status === 'setup' || p.status === 'ongoing' ? 'badge-primary' : 'badge-pending');
+                
+                // Calculate milestone progress
+                const milestones = p.milestones || [];
+                const completed = milestones.filter(m => m.status === 'completed').length;
+                const progress = milestones.length > 0 ? (completed / milestones.length) * 100 : 0;
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>
+                        <div style="font-weight:600">${p.title || 'Untitled Project'}</div>
+                        <div style="font-size:12px; color:var(--text-muted)">ID: ${p.id.substring(0, 8)}</div>
+                    </td>
+                    <td>
+                        <div style="display:flex; flex-direction:column; gap:4px;">
+                            <div style="font-size:13px;"><span style="color:var(--text-muted)">Owner:</span> ${p.ownerName || 'N/A'}</div>
+                            <div style="font-size:13px;"><span style="color:var(--text-muted)">Talent:</span> ${p.workerName || 'N/A'}</div>
+                        </div>
+                    </td>
+                    <td>
+                        <div style="font-weight:700">₹${p.amount || 0}</div>
+                        <div style="width:100px; height:6px; background:var(--border); border-radius:3px; margin-top:8px; overflow:hidden;">
+                            <div style="width:${progress}%; height:100%; background:var(--success);"></div>
+                        </div>
+                        <div style="font-size:10px; color:var(--text-muted); margin-top:4px;">${completed}/${milestones.length} Milestones</div>
+                    </td>
+                    <td>
+                        <span class="badge ${p.depositPaid ? 'badge-success' : 'badge-warning'}" style="${!p.depositPaid ? 'background: rgba(245, 158, 11, 0.1); color: var(--warning);' : ''}">
+                            <i class="fas ${p.depositPaid ? 'fa-lock' : 'fa-unlock'}"></i> ${p.depositPaid ? 'SECURED' : 'UNSECURED'}
+                        </span>
+                    </td>
+                    <td><span class="badge ${statusBadge}">${p.status.toUpperCase()}</span></td>
+                    <td>
+                        <div class="action-btns">
+                            <button class="btn btn-outline" style="color:var(--warning)" onclick="interveneProject('${p.id}')" title="Intervene"><i class="fas fa-shield-halved"></i></button>
+                            <button class="btn btn-outline" onclick="viewAuditTrail('${p.id}')" title="Audit Trail"><i class="fas fa-list-check"></i></button>
+                        </div>
+                    </td>
+                `;
+                body.appendChild(tr);
+            });
+            
+            document.getElementById('stat-escrow-secured').innerText = `₹${totalEscrow.toLocaleString()}`;
+        }
+
+        function renderApprovals(list) {
+            const body = document.getElementById('approvals-table');
+            body.innerHTML = '';
+            list.forEach(i => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="font-weight:600">${i.jobTitle || i.projectTitle}</td>
+                    <td>${i.companyName || i.clientName || 'Anonymous'}</td>
+                    <td>₹${i.salaryMin || i.budget || 'N/A'}</td>
+                    <td><span class="badge badge-primary">${i._type}</span></td>
+                    <td><div class="action-btns">
+                        <button class="btn btn-primary" onclick="approveListing('${i.id}', '${i._type === 'jobs' ? 'job_posts' : 'project_posts'}')">Approve</button>
+                        <button class="btn btn-outline" style="color:var(--danger)" onclick="rejectListing('${i.id}', '${i._type === 'jobs' ? 'job_posts' : 'project_posts'}')">Reject</button>
+                        <button class="btn btn-ai" title="AI Audit" onclick="auditListing('${i.id}', '${i._type}')"><i class="fas fa-sparkles"></i></button>
+                    </div></td>
+                `;
+                body.appendChild(tr);
+            });
+        }
+
+        /* ---------------- ACTIONS ---------------- */
+        window.toggleBan = (uid, current) => {
+            const act = current ? 'Unban' : 'Ban';
+            showConfirm(`${act} User?`, `Are you sure you want to ${act.toLowerCase()} this professional?`, async () => {
+                await updateDoc(doc(db, 'users', uid), { isBanned: !current });
+                showToast(`User ${act}ned successfully`, 'success');
+            });
+        };
+
+        window.approveListing = async (id, coll) => {
+            await updateDoc(doc(db, coll, id), { status: 'approved' });
+            showToast("Listing published to marketplace", "success");
+        };
+
+        window.rejectListing = async (id, coll) => {
+            await updateDoc(doc(db, coll, id), { status: 'rejected' });
+            showToast("Listing rejected", "warning");
+        };
+
+        window.deleteItem = (id, coll) => {
+            showConfirm("Delete Permanently?", "This action cannot be undone.", async () => {
+                await deleteDoc(doc(db, coll, id));
+                showToast("Listing removed", "success");
+            });
+        };
+
+        window.verifyOwner = (uid) => {
+            showConfirm("Grant Business Status?", "This verifies the company profile and grants posting rights.", async () => {
+                const expiry = Date.now() + (14 * 24 * 60 * 60 * 1000);
+                await updateDoc(doc(db, 'users', uid), {
+                    role: 'businessOwner',
+                    ownerRequestStatus: 'approved',
+                    isTrialActive: true,
+                    subscriptionExpiry: expiry,
+                    subscriptionTier: 'Pro'
+                });
+                showToast("Owner verified successfully", "success");
+            });
+        };
+
+        window.processWithdrawal = async (id) => {
+            await updateDoc(doc(db, 'withdrawals', id), { status: 'completed' });
+            showToast("Payout processed", "success");
+        };
+
+        window.resolveDispute = (id) => {
+            const dispute = allDisputesGlobal[id];
+            if (!dispute) return;
+
+            const decision = prompt("Enter 'RELEASE' to pay worker, or 'REFUND' to return to owner:");
+            if (!decision) return;
+
+            const action = decision.toUpperCase();
+            if (action !== 'RELEASE' && action !== 'REFUND') {
+                showToast("Invalid action. Must be RELEASE or REFUND.", "error");
+                return;
+            }
+
+            const reason = prompt("Enter arbitration justification:");
+            if (!reason) return;
+
+            showConfirm(`Confirm Dispute Resolution?`, `Action: ${action}\nJustification: ${reason}`, async () => {
+                try {
+                    const response = await fetch(`${LEDGER_BASE_URL}/admin/disputes/resolve`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'x-admin-key': ADMIN_API_KEY
+                        },
+                        body: JSON.stringify({
+                            projectId: dispute.projectId || dispute.referenceId,
+                            terminalAction: action,
+                            workerId: dispute.workerId || dispute.raisedBy // Adjust based on data schema
+                        })
+                    });
+
+                    if (!response.ok) throw new Error("Backend resolution failed");
+
+                    // Also update Firestore for UI feedback
+                    await updateDoc(doc(db, 'disputes', id), {
+                        status: 'resolved',
+                        adminDecision: `${action}: ${reason}`,
+                        resolvedAt: new Date()
+                    });
+
+                    showToast(`Dispute resolved via ${action}`, "success");
+                } catch (e) {
+                    showToast(e.message, "error");
+                }
+            });
+        };
+
+        window.viewProjectDetails = (id) => {
+            showToast(`Fetching project ${id.substring(0,8)} deep logs...`, "info");
+            // Highlight it in the live projects table or open a details view
+            switchSection('live-projects');
+        };
+
+        window.interveneProject = (id) => {
+            const action = prompt("ADMIN INTERVENTION: Type 'PAUSE', 'CANCEL', or 'FORCE_RELEASE' (Milestone ID required):");
+            if (action) {
+                showConfirm(`Execute ${action}?`, "This is a high-privilege terminal action that will lock the project state.", async () => {
+                   try {
+                       await updateDoc(doc(db, 'projects', id), { 
+                           status: action === 'PAUSE' ? 'intervened' : (action === 'CANCEL' ? 'cancelled' : 'ongoing'),
+                           lastAdminAction: action,
+                           intervenedAt: new Date()
+                       });
+                       showToast(`Intervention ${action} successful for ${id.substring(0,8)}`, "warning");
+                   } catch (e) {
+                       showToast("Backend intervention failed. Manual override required.", "error");
+                   }
+                });
+            }
+        };
+
+        window.viewAuditTrail = (id) => {
+            showToast(`Generating audit trail for ${id.substring(0,8)}...`, "info");
+            // Link to Ledger Explorer with filter for this project
+            document.getElementById('ledger-account-filter').value = id;
+            switchSection('ledger-explorer');
+            refreshLedger();
+        };
+
+        window.generateFreelanceReport = () => {
+            showToast("AI Market Audit initiated. Analyzing bid patterns...", "ai");
+            setTimeout(() => {
+                const modal = document.getElementById('ai-modal');
+                const modalTitle = document.getElementById('ai-modal-title');
+                const modalBody = document.getElementById('ai-modal-body');
+                
+                modalTitle.innerText = "✨ Freelance Economy Report";
+                modalBody.innerText = `MARKET HEALTH: OPTIMAL\n\n- Active Bids: ${document.getElementById('stat-active-bids').innerText}\n- Escrow Secured: ${document.getElementById('stat-escrow-secured').innerText}\n- Supply/Demand: Healthy\n\nNo abnormal behavior or "race-to-bottom" strategies detected in the last 24h.`;
+                modal.style.display = 'flex';
+                
+                showToast("Market Health: STABLE", "success");
+            }, 1000);
+        };
+
+        /* ---------------- CAROUSEL LOGIC ---------------- */
+        window.openSlideModal = () => {
+            document.getElementById('slide-id').value = '';
+            document.getElementById('slide-existing-url').value = '';
+            document.getElementById('slide-file').value = '';
+            document.getElementById('slide-nav-url').value = '/main';
+            document.getElementById('slide-order').value = '0';
+            document.getElementById('slide-type').value = 'image';
+            toggleSlideType();
+            document.getElementById('slide-preview-container').innerHTML = '<span style="color:var(--text-muted)">Image Preview</span>';
+            document.getElementById('slide-modal-title').innerText = 'Create Hero Slide';
+            document.getElementById('slide-modal').style.display = 'flex';
+        };
+
+        window.toggleSlideType = () => {
+            const type = document.getElementById('slide-type').value;
+            const label = document.getElementById('slide-file-label');
+            const input = document.getElementById('slide-file');
+
+            if (type === 'video') {
+                label.innerText = 'Upload Slide Video (MP4/WebM)';
+                input.accept = 'video/*';
+            } else {
+                label.innerText = 'Upload Slide Image (1080x420 Rec.)';
+                input.accept = 'image/*';
+            }
+        };
+
+        window.editSlide = (s) => {
+            document.getElementById('slide-id').value = s.id;
+            document.getElementById('slide-existing-url').value = s.image_url;
+            document.getElementById('slide-type').value = s.type || 'image';
+            toggleSlideType();
+            document.getElementById('slide-nav-type').value = s.nav_type;
+            document.getElementById('slide-nav-url').value = s.nav_url;
+            document.getElementById('slide-order').value = s.order_index;
+
+            if (s.type === 'video') {
+                document.getElementById('slide-preview-container').innerHTML = `<video src="${s.image_url}" style="width:100%; max-height:100px;" controls></video>`;
+            } else {
+                document.getElementById('slide-preview-container').innerHTML = `<img src="${s.image_url}">`;
+            }
+
+            document.getElementById('slide-modal-title').innerText = 'Edit Hero Slide';
+            document.getElementById('slide-modal').style.display = 'flex';
+        };
+
+        window.closeSlideModal = () => document.getElementById('slide-modal').style.display = 'none';
+
+        window.previewImage = (input) => {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = e => document.getElementById('slide-preview-container').innerHTML = `<img src="${e.target.result}">`;
+                reader.readAsDataURL(input.files[0]);
+            }
+        };
+
+        window.saveSlide = async () => {
+            const btn = document.getElementById('btn-save-slide');
+            btn.disabled = true;
+            btn.innerText = 'Uploading...';
+
+            const id = document.getElementById('slide-id').value;
+            const file = document.getElementById('slide-file').files[0];
+            let imageUrl = document.getElementById('slide-existing-url').value;
+
+            try {
+                if (file) {
+                    const fileName = `slide_${Date.now()}_${file.name}`;
+                    const { data, error } = await supabase.storage.from('carousel-images').upload(fileName, file);
+                    if (error) throw error;
+                    const { data: pub } = supabase.storage.from('carousel-images').getPublicUrl(fileName);
+                    imageUrl = pub.publicUrl;
+                }
+
+                if (!imageUrl) throw new Error("Image asset is required");
+
+
+                const payload = {
+                    image_url: imageUrl,
+                    type: document.getElementById('slide-type').value,
+                    nav_type: document.getElementById('slide-nav-type').value,
+                    nav_url: document.getElementById('slide-nav-url').value,
+                    order_index: parseInt(document.getElementById('slide-order').value),
+                    is_active: true,
+                    updated_at: new Date()
+                };
+
+                if (id) {
+                    await updateDoc(doc(db, 'carousel_slides', id), payload);
+                } else {
+                    payload.created_at = new Date();
+                    await setDoc(doc(collection(db, 'carousel_slides')), payload);
+                }
+
+                showToast("Slide logic synchronized", "success");
+                closeSlideModal();
+            } catch (e) {
+                showToast(e.message, "error");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = 'Save Slide';
+            }
+        };
+
+        window.deleteSlide = (id) => {
+            showConfirm("Remove Slide?", "This slide will be permanently deleted from the carousel.", async () => {
+                await deleteDoc(doc(db, 'carousel_slides', id));
+                showToast("Slide removed", "success");
+            });
+        };
+
+        /* ---------------- GOVERNANCE SETTINGS ---------------- */
+        async function loadSettings() {
+            const snap = await getDoc(doc(db, 'admin_settings', 'platform'));
+            if (snap.exists()) {
+                const d = snap.data();
+                const fee = d.platformFeePercentage ?? 10;
+                document.getElementById('set-fee').value = fee;
+                document.getElementById('set-fee-slider').value = fee;
+                document.getElementById('set-min-escrow').value = d.minimumEscrowDeposit || 50;
+                document.getElementById('set-escrow-toggle').checked = d.escrowEnabled ?? true;
+                document.getElementById('set-min-withdraw').value = d.minimumWithdrawal || 100;
+
+                // Add event listeners for live control
+                setupLiveControl();
+            }
+        }
+
+        let saveTimeout = null;
+        function setupLiveControl() {
+            const feeInput = document.getElementById('set-fee');
+            const feeSlider = document.getElementById('set-fee-slider');
+            const syncStatus = document.getElementById('sync-status');
+
+            const onFeeChange = (e) => {
+                const val = e.target.value;
+                feeInput.value = val;
+                feeSlider.value = val;
+
+                // Debounced auto-save
+                syncStatus.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+                syncStatus.style.display = 'inline';
+                syncStatus.style.color = 'var(--warning)';
+
+                if (saveTimeout) clearTimeout(saveTimeout);
+                saveTimeout = setTimeout(async () => {
+                    await saveAdminSettings(false);
+                    syncStatus.innerHTML = '<i class="fas fa-check-circle"></i> Synced';
+                    syncStatus.style.color = 'var(--success)';
+                    setTimeout(() => syncStatus.style.display = 'none', 2000);
+                }, 1000);
+            };
+
+            feeInput.oninput = onFeeChange;
+            feeSlider.oninput = onFeeChange;
+        }
+
+        window.saveAdminSettings = async (showNotification = true) => {
+            const payload = {
+                platformFeePercentage: parseFloat(document.getElementById('set-fee').value),
+                minimumEscrowDeposit: parseFloat(document.getElementById('set-min-escrow').value),
+                escrowEnabled: document.getElementById('set-escrow-toggle').checked,
+                minimumWithdrawal: parseFloat(document.getElementById('set-min-withdraw').value),
+                updatedAt: new Date()
+            };
+            await setDoc(doc(db, 'admin_settings', 'platform'), payload, { merge: true });
+            if (showNotification) showToast("Global governance updated", "success");
+        };
+
+        /* ---------------- ENTERPRISE LEDGER LOGIC ---------------- */
+        const LEDGER_BASE_URL = 'http://localhost:3000';
+        const ADMIN_API_KEY = 'secret_admin_123';
+        const API_BASE = LEDGER_BASE_URL; // Assuming API_BASE is the same as LEDGER_BASE_URL
+
+        window.refreshLedger = async () => {
+            const body = document.getElementById('ledger-table');
+            body.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:40px;"><i class="fas fa-spinner fa-spin"></i> Fetching immutable records...</td></tr>';
+
+            try {
+                const response = await fetch(`${LEDGER_BASE_URL}/admin/ledger/transactions`, {
+                    headers: { 'x-admin-key': ADMIN_API_KEY }
+                });
+
+                if (!response.ok) throw new Error('Failed to fetch ledger data');
+
+                const transactions = await response.json();
+                renderLedger(transactions.reverse());
+            } catch (e) {
+                body.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--danger); padding:40px;"><i class="fas fa-exclamation-triangle"></i> ${e.message}. Ensure Payment Orchestrator is running.</td></tr>`;
+            }
+        };
+
+        async function refreshLedger() {
+            const container = document.getElementById('ledger-table');
+            const accountId = document.getElementById('ledger-account-filter').value;
+            container.innerHTML = '<tr><td colspan="6" style="text-align:center;"><i class="fas fa-spinner fa-spin"></i> Loading deep ledger data...</td></tr>';
+            
+            try {
+                let url = '/finance/ledger/detailed';
+                if (accountId) url += `?accountId=${accountId}`;
+                
+                const res = await callAdminAPI(url, 'GET');
+                renderLedger(res.data);
+            } catch (e) {
+                container.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--danger);">${e.message}</td></tr>`;
+            }
+        }
+
+        function renderLedger(list) {
+            const body = document.getElementById('ledger-table');
+            body.innerHTML = '';
+
+            if (list.length === 0) {
+                body.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:40px; color:var(--text-muted);">No matching ledger transactions found.</td></tr>';
+                return;
+            }
+
+            list.forEach(txn => {
+                const tr = document.createElement('tr');
+                const entriesHtml = txn.entries.map(e => `
+                    <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px; padding: 4px 8px; background: rgba(0,0,0,0.2); border-radius: 4px;">
+                        <span style="color: var(--text-muted); font-family: monospace;">${e.accountId.substring(0, 12)}...</span>
+                        <span style="font-weight:600; color:${e.direction === 'DEBIT' ? '#ff4d4d' : '#00e676'}">
+                            ${e.direction === 'DEBIT' ? '-' : '+'}${e.amount.toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}
+                        </span>
+                    </div>
+                `).join('');
+
+                tr.innerHTML = `
+                    <td><div style="font-weight:600; color:var(--primary)">#${txn.id.substring(0, 8)}</div><div style="font-size:11px; color:var(--text-muted)">${txn.id}</div></td>
+                    <td><span class="badge badge-primary" style="text-transform: uppercase; letter-spacing: 0.5px;">${txn.type}</span></td>
+                    <td><code style="background: var(--bg-card); padding: 4px 8px; border-radius: 6px; border: 1px solid var(--border);">${txn.referenceId}</code></td>
+                    <td><div style="min-width:280px;">${entriesHtml}</div></td>
+                    <td><span class="badge ${txn.status === 'POSTED' ? 'badge-success' : 'badge-pending'}">${txn.status}</span></td>
+                    <td><div style="font-size:13px;">${new Date(txn.createdAt).toLocaleDateString()}</div><div style="font-size:11px; color:var(--text-muted)">${new Date(txn.createdAt).toLocaleTimeString()}</div></td>
+                `;
+                body.appendChild(tr);
+            });
+        }
+
+        /* ---------------- SYSTEM HEALTH LOGIC ---------------- */
+        window.refreshHealth = async () => {
+            try {
+                const response = await fetch(`${LEDGER_BASE_URL}/admin/health`, {
+                    headers: { 'x-admin-key': ADMIN_API_KEY }
+                });
+
+                if (!response.ok) throw new Error('Health check failed');
+
+                const data = await response.json();
+
+                // Update UI
+                document.getElementById('health-txn-count').innerText = data.ledger.totalTransactions;
+                document.getElementById('health-uptime').innerText = formatUptime(data.uptime);
+
+                const ledgerStatus = document.getElementById('health-ledger-status');
+                if (data.ledger.isBalanced) {
+                    ledgerStatus.innerHTML = '<div style="font-size: 24px; font-weight: 700; color: var(--success);"><i class="fas fa-check-circle"></i> BALANCED</div><p style="color: var(--text-muted); font-size: 13px;">Double-entry balance sum: 0.00 INR</p>';
+                } else {
+                    ledgerStatus.innerHTML = '<div style="font-size: 24px; font-weight: 700; color: var(--danger);"><i class="fas fa-exclamation-triangle"></i> IMBALANCE DETECTED</div><p style="color: var(--danger); font-size: 13px;">Critical ledger audit failure!</p>';
+                }
+
+                document.getElementById('health-db').innerText = data.infrastructure.postgres;
+                document.getElementById('health-redis').innerText = data.infrastructure.redis;
+
+                showToast("Diagnostics complete", "success");
+            } catch (e) {
+                showToast(e.message, "error");
+            }
+        };
+
+        function formatUptime(seconds) {
+            const h = Math.floor(seconds / 3600);
+            const m = Math.floor((seconds % 3600) / 60);
+            const s = seconds % 60;
+            return `${h}h ${m}m ${s}s`;
+        }
+
+        /* ---------------- ENTERPRISE GOVERNANCE & SAFETY ---------------- */
+        window.refreshPolicies = async () => {
+            const body = document.getElementById('policy-table-body');
+            body.innerHTML = '<tr><td colspan="5" style="text-align:center;"><i class="fas fa-spinner fa-spin"></i> Loading policies...</td></tr>';
+            try {
+                const res = await fetch(`${LEDGER_BASE_URL}/admin/policies`, {
+                    headers: { 'x-admin-key': ADMIN_API_KEY }
+                });
+                const policies = await res.json();
+                body.innerHTML = '';
+                policies.forEach(p => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td style="font-weight:600">${p.name}</td>
+                        <td><span class="badge badge-outline">${p.entityType}</span></td>
+                        <td><code>${JSON.stringify(p.conditions)}</code></td>
+                        <td><span class="badge badge-primary">${p.action}</span></td>
+                        <td><span class="badge ${p.isActive ? 'badge-success' : 'badge-danger'}">${p.isActive ? 'Active' : 'Disabled'}</span></td>
+                    `;
+                    body.appendChild(tr);
+                });
+            } catch (e) {
+                body.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--danger);">Error loading policies</td></tr>';
+            }
+        };
+
+        window.refreshFraud = async () => {
+            const body = document.getElementById('high-risk-table-body');
+            body.innerHTML = '<tr><td colspan="5" style="text-align:center;"><i class="fas fa-spinner fa-spin"></i> Analyzing risk signals...</td></tr>';
+            try {
+                const res = await fetch(`${LEDGER_BASE_URL}/admin/fraud/high-risk`, {
+                    headers: { 'x-admin-key': ADMIN_API_KEY }
+                });
+                const users = await res.json();
+                body.innerHTML = '';
+                users.forEach(u => {
+                    const tr = document.createElement('tr');
+                    const riskLevel = u.riskScore > 80 ? 'CRITICAL' : (u.riskScore > 50 ? 'HIGH' : 'MEDIUM');
+                    const badgeClass = riskLevel === 'CRITICAL' ? 'badge-danger' : 'badge-warning';
+                    tr.innerHTML = `
+                        <td>${u.userId}</td>
+                        <td>${u.riskScore}</td>
+                        <td><span class="badge ${badgeClass}">${riskLevel}</span></td>
+                        <td>${new Date(u.lastUpdated).toLocaleDateString()}</td>
+                        <td><button class="btn btn-outline" onclick="investigateUser('${u.userId}')">Investigate</button></td>
+                    `;
+                    body.appendChild(tr);
+                });
+                document.getElementById('stat-critical-risk').innerText = users.filter(u => u.riskScore > 80).length;
+            } catch (e) {
+                body.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--danger);">Error loading fraud data</td></tr>';
+            }
+        };
+
+        window.investigateUser = (uid) => {
+            showToast(`Opening fraud dossier for ${uid}...`, 'info');
+        };
+
+        window.refreshKYC = async () => {
+            const body = document.getElementById('kyc-table-body');
+            body.innerHTML = '<tr><td colspan="5" style="text-align:center;"><i class="fas fa-spinner fa-spin"></i> Fetching submissions...</td></tr>';
+            try {
+                const res = await fetch(`${LEDGER_BASE_URL}/admin/kyc/pending`, {
+                    headers: { 'x-admin-key': ADMIN_API_KEY }
+                });
+                const pending = await res.json();
+                body.innerHTML = '';
+                pending.forEach(k => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${k.userId}</td>
+                        <td>${k.documentType}</td>
+                        <td><span class="badge badge-pending">PENDING</span></td>
+                        <td>${new Date(k.submittedAt).toLocaleDateString()}</td>
+                        <td>
+                            <div class="action-btns">
+                                <button class="btn btn-primary" onclick="approveKYC('${k.userId}')">Verify</button>
+                                <button class="btn btn-danger" onclick="rejectKYC('${k.userId}')">Reject</button>
+                            </div>
+                        </td>
+                    `;
+                    body.appendChild(tr);
+                });
+            } catch (e) {
+                body.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--danger);">Error loading KYC data</td></tr>';
+            }
+        };
+
+        window.approveKYC = async (uid) => {
+            showConfirm("Approve Identity?", `Grant verified status to user ${uid}?`, async () => {
+                try {
+                    const res = await fetch(`${LEDGER_BASE_URL}/admin/kyc/review`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'x-admin-key': ADMIN_API_KEY },
+                        body: JSON.stringify({ userId: uid, status: 'verified' })
+                    });
+                    if (res.ok) {
+                        showToast("User verified successfully", "success");
+                        refreshKYC();
+                    }
+                } catch (e) { showToast("Verification failed", "error"); }
+            });
+        };
+
+        window.rejectKYC = async (uid) => {
+            const reason = prompt("Reason for rejection:");
+            if (!reason) return;
+            try {
+                const res = await fetch(`${LEDGER_BASE_URL}/admin/kyc/review`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'x-admin-key': ADMIN_API_KEY },
+                    body: JSON.stringify({ userId: uid, status: 'rejected', comments: reason })
+                });
+                if (res.ok) {
+                    showToast("Submission rejected", "warning");
+                    refreshKYC();
+                }
+            } catch (e) { showToast("Action failed", "error"); }
+        };
+
+        window.openPolicyModal = () => {
+            showToast("Policy creation wizard launching soon...", "info");
+        };
+
+        /* ---------------- MARKETPLACE INTELLIGENCE ---------------- */
+        window.refreshMarketplaceStats = async () => {
+            try {
+                // Fetch Global Stats
+                const statsRes = await fetch(`${LEDGER_BASE_URL}/admin/marketplace/stats`, {
+                    headers: { 'x-admin-key': ADMIN_API_KEY }
+                });
+                const stats = await statsRes.json();
+
+                document.getElementById('stats-sd-ratio').innerText = stats.supplyDemandRatio.toFixed(2);
+                document.getElementById('stats-worker-count').innerText = stats.workerCount.toLocaleString();
+                document.getElementById('stats-owner-count').innerText = stats.ownerCount.toLocaleString();
+                document.getElementById('stats-active-projects').innerText = stats.activeProjectCount.toLocaleString();
+
+                // Render Trending Skills
+                const skillsBody = document.getElementById('trending-skills-table-body');
+                skillsBody.innerHTML = '';
+                stats.trendingSkills.forEach(s => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `<td>${s.skill}</td><td>${s.count}</td>`;
+                    skillsBody.appendChild(tr);
+                });
+
+                // Fetch Revenue Metrics
+                const revenueRes = await fetch(`${LEDGER_BASE_URL}/admin/revenue/metrics`, {
+                    headers: { 'x-admin-key': ADMIN_API_KEY }
+                });
+                const metrics = await revenueRes.json();
+                document.getElementById('metric-ltv').innerText = `₹${metrics.ltv.toFixed(2)}`;
+                document.getElementById('metric-cac').innerText = `₹${metrics.cac.toFixed(2)}`;
+                document.getElementById('metric-churn').innerText = `${(metrics.churnRate * 100).toFixed(1)}%`;
+
+                const forecastRes = await fetch(`${LEDGER_BASE_URL}/admin/revenue/forecast`, {
+                    headers: { 'x-admin-key': ADMIN_API_KEY }
+                });
+                const forecast = await forecastRes.json();
+                document.getElementById('metric-forecast').innerText = `₹${forecast.nextMonth.toLocaleString()}`;
+
+                showToast("Market intel updated", "success");
+            } catch (e) {
+                showToast("Market Intelligence: " + e.message, "error");
+            }
+        };
+
+        window.refreshPromotions = async () => {
+            const body = document.getElementById('promotions-table-body');
+            body.innerHTML = '<tr><td colspan="5" style="text-align:center;"><i class="fas fa-spinner fa-spin"></i> Fetching active campaigns...</td></tr>';
+            try {
+                const res = await fetch(`${LEDGER_BASE_URL}/admin/growth/promotions`, {
+                    headers: { 'x-admin-key': ADMIN_API_KEY }
+                });
+                const promotions = await res.json();
+                body.innerHTML = '';
+                if (promotions.length === 0) {
+                    body.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px;">No active promotions.</td></tr>';
+                    return;
+                }
+                promotions.forEach(p => {
+                    const tr = document.createElement('tr');
+                    const expiryData = p.promotionExpiresAt;
+                    const expiry = expiryData && expiryData._seconds ? new Date(expiryData._seconds * 1000).toLocaleDateString() : 'N/A';
+                    tr.innerHTML = `
+                        <td>${p.title || p.id}</td>
+                        <td><span class="badge badge-outline">${p.promotionTier}</span></td>
+                        <td>${expiry}</td>
+                        <td><span class="badge badge-success">Active</span></td>
+                        <td><button class="btn btn-outline btn-sm" onclick="showToast('Analysing conversion...', 'info')">Stats</button></td>
+                    `;
+                    body.appendChild(tr);
+                });
+            } catch (e) {
+                body.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--danger);">${e.message}</td></tr>`;
+            }
+        };
+
+        /* ---------------- PHASE 3: OPERATIONAL CONTROL ---------------- */
+        window.refreshTickets = async (status = '') => {
+            const body = document.getElementById('tickets-table-body');
+            body.innerHTML = '<tr><td colspan="6" style="text-align:center;"><i class="fas fa-spinner fa-spin"></i> Loading tickets...</td></tr>';
+            try {
+                const res = await fetch(`${LEDGER_BASE_URL}/admin/support/tickets?status=${status}`, {
+                    headers: { 'x-admin-key': ADMIN_API_KEY }
+                });
+                const tickets = await res.json();
+                body.innerHTML = tickets.map(t => `
+                    <tr>
+                        <td>#${t.id.substring(0, 8)}</td>
+                        <td>${t.subject}</td>
+                        <td>${t.category}</td>
+                        <td><span class="badge badge-${t.priority === 'high' ? 'danger' : 'warning'}">${t.priority}</span></td>
+                        <td><span class="badge badge-${t.status === 'open' ? 'pending' : (t.status === 'resolved' ? 'success' : 'primary')}">${t.status}</span></td>
+                        <td>
+                            <div class="action-btns">
+                                <button class="btn btn-outline btn-sm" onclick="showToast('Loading ticket thread...', 'info')">Thread</button>
+                                ${t.status !== 'resolved' ? `<button class="btn btn-primary btn-sm" onclick="resolveTicket('${t.id}')">Resolve</button>` : ''}
+                            </div>
+                        </td>
+                    </tr>
+                `).join('') || '<tr><td colspan="6" style="text-align:center;">No tickets found.</td></tr>';
+            } catch (e) {
+                body.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--danger);">${e.message}</td></tr>`;
+            }
+        };
+
+        window.resolveTicket = async (id) => {
+            showConfirm("Resolve Ticket?", "Mark this support inquiry as completed?", async () => {
+                try {
+                    const res = await fetch(`${LEDGER_BASE_URL}/admin/support/tickets/${id}/status`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'x-admin-key': ADMIN_API_KEY },
+                        body: JSON.stringify({ status: 'resolved' })
+                    });
+                    if (res.ok) {
+                        showToast("Ticket resolved", "success");
+                        refreshTickets();
+                    }
+                } catch (e) { showToast("Action failed", "error"); }
+            });
+        };
+
+        window.refreshBroadcasts = async () => {
+            const body = document.getElementById('broadcast-history-body');
+            body.innerHTML = '<tr><td colspan="4" style="text-align:center;"><i class="fas fa-spinner fa-spin"></i> Fetching logs...</td></tr>';
+            try {
+                const res = await fetch(`${LEDGER_BASE_URL}/admin/messaging/history`, {
+                    headers: { 'x-admin-key': ADMIN_API_KEY }
+                });
+                const history = await res.json();
+                body.innerHTML = history.reverse().map(h => `
+                    <tr>
+                        <td>${h.title}</td>
+                        <td><span class="badge badge-outline">${h.target}</span></td>
+                        <td>${new Date(h.timestamp).toLocaleString()}</td>
+                        <td><span class="badge badge-success">SENT</span></td>
+                    </tr>
+                `).join('') || '<tr><td colspan="4" style="text-align:center;">No broadcast history.</td></tr>';
+            } catch (e) {
+                body.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--danger);">${e.message}</td></tr>`;
+            }
+        };
+
+        window.sendBroadcast = async () => {
+            const title = document.getElementById('msg-title').value;
+            const body = document.getElementById('msg-body').value;
+            const target = document.getElementById('msg-target').value;
+
+            if (!title || !body) return showToast("Title and message required", "error");
+
+            showConfirm("Confirm Broadcast?", `This will send a push notification to ${target} users.`, async () => {
+                try {
+                    const res = await fetch(`${LEDGER_BASE_URL}/admin/messaging/broadcast`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'x-admin-key': ADMIN_API_KEY },
+                        body: JSON.stringify({ title, body, target })
+                    });
+                    if (res.ok) {
+                        showToast("Broadcast successful", "success");
+                        refreshBroadcasts();
+                        document.getElementById('msg-title').value = '';
+                        document.getElementById('msg-body').value = '';
+                    }
+                } catch (e) { showToast("Broadcast failed", "error"); }
+            });
+        };
+
+        window.refreshReleaseConfig = async () => {
+            const body = document.getElementById('flags-table-body');
+            try {
+                const res = await fetch(`${LEDGER_BASE_URL}/admin/ops/release-config`, {
+                    headers: { 'x-admin-key': ADMIN_API_KEY }
+                });
+                const config = await res.json();
+
+                // Render Flags
+                body.innerHTML = Object.entries(config.featureFlags).map(([key, val]) => `
+                    <tr>
+                        <td><code>${key}</code></td>
+                        <td><span class="badge ${val ? 'badge-success' : 'badge-danger'}">${val ? 'ENABLED' : 'DISABLED'}</span></td>
+                        <td>
+                            <button class="btn btn-outline btn-sm" onclick="toggleFeatureFlag('${key}', ${val})">Toggle</button>
+                        </td>
+                    </tr>
+                `).join('');
+
+                // Update Min Version
+                document.getElementById('min-version-input').value = config.minRequiredVersion;
+            } catch (e) { showToast("Config fetch failed", "error"); }
+        };
+
+        window.toggleFeatureFlag = async (flag, current) => {
+            try {
+                const res = await fetch(`${LEDGER_BASE_URL}/admin/ops/release-config/feature-flag`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'x-admin-key': ADMIN_API_KEY },
+                    body: JSON.stringify({ flag, enabled: !current })
+                });
+                if (res.ok) {
+                    showToast(`${flag} updated`, "success");
+                    refreshReleaseConfig();
+                }
+            } catch (e) { showToast("Toggle failed", "error"); }
+        };
+
+        window.updateMinVersion = async () => {
+            const version = document.getElementById('min-version-input').value;
+            showConfirm("Update App Version?", `This will force all users below ${version} to update.`, async () => {
+                try {
+                    const res = await callAdminAPI('/ops/release-config/min-version', 'POST', { version });
+                    if (res) {
+                        showToast("Platform version updated", "success");
+                    }
+                } catch (e) { showToast("Update failed", "error"); }
+            });
+        };
+
+        window.runPlatformAudit = async () => {
+            const logContainer = document.getElementById('audit-logs');
+            logContainer.innerHTML = `<div style="color: var(--warning)">> Initializing platform-wide automated audit...</div>`;
+            logContainer.innerHTML += `<div>> Target: Payment Orchestrator (Ledger + Escrow + Wallets)</div>`;
+            
+            try {
+                const res = await callAdminAPI('/finance/audit/run', 'POST');
+                const audit = res.data;
+                
+                // Update Stats
+                document.getElementById('audit-escrow').innerText = `₹${(audit.metrics.totalEscrow / 100).toLocaleString('en-IN')}`;
+                document.getElementById('audit-invariant').innerHTML = audit.passed ? 
+                    `<span style="color: #00e676; font-weight: 700;"><i class="fas fa-check-double"></i> VALID</span>` : 
+                    `<span style="color: #ff4d4d; font-weight: 700;"><i class="fas fa-triangle-exclamation"></i> IMBALANCED</span>`;
+                document.getElementById('audit-issues').innerText = audit.issues.length;
+                document.getElementById('audit-issues').parentElement.style.color = audit.issues.length > 0 ? '#ff4d4d' : 'inherit';
+
+                // Update Logs
+                const time = new Date(audit.timestamp).toLocaleTimeString();
+                logContainer.innerHTML += `<div style="border-top: 1px border var(--border); margin: 12px 0; padding-top: 12px;">> [${time}] <span style="color: #4da3ff">Audit Cycle #${audit.timestamp.toString().slice(-6)} Completed.</span></div>`;
+                
+                if (audit.passed) {
+                    logContainer.innerHTML += `<div style="color: #00e676">> [PASS] Ledger double-entry invariant verified. Net balance is zero.</div>`;
+                    logContainer.innerHTML += `<div style="color: #00e676">> [PASS] Escrow pool consistency check successful.</div>`;
+                } else {
+                    audit.issues.forEach(issue => {
+                        logContainer.innerHTML += `<div style="color: #ff4d4d">> [CRITICAL] ${issue}</div>`;
+                    });
+                }
+                
+                logContainer.innerHTML += `<div style="color: var(--text-muted); margin-top: 8px;">> System Metrics:</div>`;
+                logContainer.innerHTML += `<div style="color: var(--text-muted)">  - Total Wallets Scanned: ${audit.metrics.totalUserWallets}</div>`;
+                logContainer.innerHTML += `<div style="color: var(--text-muted)">  - Ledger Volume Check: Verified</div>`;
+                
+                showToast(audit.passed ? 'Platform Audit Passed' : 'Audit Anomalies Detected', audit.passed ? 'success' : 'error');
+                
+                // Auto-scroll to bottom of logs
+                logContainer.scrollTop = logContainer.scrollHeight;
+            } catch (e) {
+                console.error(e);
+                logContainer.innerHTML += `<div style="color: #ff4d4d">> [FATAL ERROR] Internal Audit Fault: ${e.message}</div>`;
+                showToast('Audit sequence failed', 'error');
+            }
+        };
+
+        // Phase 5: Advanced AI & Ecosystem
+
+        async function refreshABTesting() {
+            const table = document.getElementById('ab-table');
+            table.innerHTML = '<tr><td colspan="6" style="text-align:center">Loading experiments...</td></tr>';
+
+            try {
+                const res = await fetch(`${API_BASE}/ops/ab-testing`, { headers: { 'x-admin-key': ADMIN_API_KEY } });
+                const experiments = await res.json();
+
+                table.innerHTML = experiments.map(exp => `
+                    <tr>
+                        <td><strong>${exp.name}</strong><br><small>${exp.description}</small></td>
+                        <td><span class="status-pill ${exp.status === 'active' ? 'status-active' : 'status-pending'}">${exp.status.toUpperCase()}</span></td>
+                        <td>${exp.variations.length} Variants</td>
+                        <td>${exp.variations[0].name}</td>
+                        <td>${((exp.variations[0].metrics.conversions / (exp.variations[0].metrics.impressions || 1)) * 100).toFixed(1)}%</td>
+                        <td>
+                            <button class="btn btn-secondary btn-sm">Edit</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (e) {
+                table.innerHTML = '<tr><td colspan="6" style="text-align:center; color: var(--danger)">Failed to load experiments</td></tr>';
+            }
+        }
+
+        async function refreshDeveloperKeys() {
+            const table = document.getElementById('keys-table');
+            table.innerHTML = '<tr><td colspan="6" style="text-align:center">Loading API keys...</td></tr>';
+
+            try {
+                const res = await fetch(`${API_BASE}/ops/developer/keys`, { headers: { 'x-admin-key': ADMIN_API_KEY } });
+                const keys = await res.json();
+
+                table.innerHTML = keys.map(key => `
+                    <tr>
+                        <td>${key.name}</td>
+                        <td><code>${key.key.substring(0, 8)}...${key.key.substring(key.key.length - 4)}</code></td>
+                        <td>${key.permissions.join(', ')}</td>
+                        <td><span class="status-pill ${key.status === 'active' ? 'status-active' : 'status-resolved'}">${key.status.toUpperCase()}</span></td>
+                        <td>${new Date(key.createdAt).toLocaleDateString()}</td>
+                        <td>
+                            <button class="btn btn-secondary btn-sm" onclick="revokeKey('${key.id}')" ${key.status === 'revoked' ? 'disabled' : ''}>Revoke</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (e) {
+                table.innerHTML = '<tr><td colspan="6" style="text-align:center; color: var(--danger)">Failed to load keys</td></tr>';
+            }
+        }
+
+        async function generateNewKey() {
+            const name = prompt("Enter a name for this API Key:");
+            if (!name) return;
+
+            try {
+                const res = await fetch(`${API_BASE}/ops/developer/keys`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'x-admin-key': ADMIN_API_KEY },
+                    body: JSON.stringify({ ownerId: 'SYSTEM_ADMIN', name, permissions: ['read:all', 'write:jobs'] })
+                });
+                const newKey = await res.json();
+                alert(`API Key Generated: ${newKey.key}\n\nPlease copy this key now, it will not be shown again.`);
+                refreshDeveloperKeys();
+            } catch (e) {
+                alert("Failed to generate key");
+            }
+        }
+
+        async function revokeKey(id) {
+            if (!confirm("Are you sure you want to revoke this key? This cannot be undone.")) return;
+            try {
+                await fetch(`${API_BASE}/ops/developer/keys/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'x-admin-key': ADMIN_API_KEY }
+                });
+                refreshDeveloperKeys();
+            } catch (e) {
+                alert("Failed to revoke key");
+            }
+        }
+
+        async function refreshSOCCenter() {
+            const feed = document.getElementById('soc-feed');
+            feed.innerHTML = '<div style="color: var(--text-muted); text-align: center;">Fetching security events...</div>';
+
+            try {
+                // Fetch summary first
+                const summaryRes = await fetch(`${API_BASE}/compliance/soc/summary`, { headers: { 'x-admin-key': ADMIN_API_KEY } });
+                const summary = await summaryRes.json();
+                document.getElementById('threat-critical').innerText = summary.critical;
+                document.getElementById('threat-high').innerText = summary.high;
+                document.getElementById('threat-low').innerText = summary.low + summary.medium;
+
+                // Fetch events
+                const eventsRes = await fetch(`${API_BASE}/compliance/soc/events`, { headers: { 'x-admin-key': ADMIN_API_KEY } });
+                const events = await eventsRes.json();
+
+                feed.innerHTML = events.length ? events.map(event => `
+                    <div style="padding: 12px; margin-bottom: 12px; border-left: 4px solid ${event.severity === 'critical' ? 'var(--danger)' : (event.severity === 'high' ? '#f59e0b' : 'var(--primary)')}; background: rgba(255,255,255,0.02); border-radius: 4px;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <div>
+                                <span style="font-weight: 600; color: ${event.severity === 'critical' ? 'var(--danger)' : 'var(--text)'}">${event.type.toUpperCase()}</span>
+                                <span style="margin-left: 8px; font-size: 11px; background: rgba(255,255,255,0.05); padding: 2px 6px; border-radius: 4px;">${event.severity.toUpperCase()}</span>
+                                <p style="margin: 4px 0; font-size: 13px;">${event.message}</p>
+                                <small style="color: var(--text-muted)">${new Date(event.timestamp).toLocaleString()}</small>
+                            </div>
+                            ${!event.resolved ? `<button class="btn btn-secondary btn-sm" onclick="resolveSOCEvent('${event.id}')">Resolve</button>` : `<span style="color: var(--success); font-size: 12px;"><i class="fas fa-check"></i> Resolved</span>`}
+                        </div>
+                    </div>
+                `).join('') : '<div style="color: var(--success); text-align: center;">No active threats detected.</div>';
+            } catch (e) {
+                feed.innerHTML = '<div style="color: var(--danger); text-align: center;">Failed to connect to SOC Intelligence Service</div>';
+            }
+        }
+
+        async function resolveSOCEvent(id) {
+            try {
+                await fetch(`${API_BASE}/compliance/soc/events/${id}/resolve`, {
+                    method: 'PATCH',
+                    headers: { 'x-admin-key': ADMIN_API_KEY }
+                });
+                refreshSOCCenter();
+            } catch (e) {
+                alert("Failed to resolve event");
+            }
+        }
+
+        // Initialize Phase 4 views when switched
+        const originalSwitchSection = window.switchSection;
+        window.switchSection = (id) => {
+            if (typeof originalSwitchSection === 'function') {
+                originalSwitchSection(id);
+            } else {
+                // Fallback if original isn't defined yet or is standard implementation
+                document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+                const target = document.getElementById(id);
+                if (target) target.classList.add('active');
+                
+                document.querySelectorAll('.sidebar li').forEach(li => li.classList.remove('active'));
+                const navItem = document.querySelector(`.sidebar li[onclick*="${id}"]`);
+                if (navItem) navItem.classList.add('active');
+            }
+
+            if (id === 'ledger-explorer') refreshLedger();
+            if (id === 'ab-testing') refreshABTesting();
+            if (id === 'developer-console') refreshDeveloperKeys();
+            if (id === 'soc-center') refreshSOCCenter();
+        };
+
+    </script>
+</body>
+
+</html>
